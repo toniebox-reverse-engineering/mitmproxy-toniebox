@@ -3,14 +3,9 @@ import logging
 from pathlib import Path
 from mitmproxy import ctx, http
 
+
 class ContentReplace:
-    def response(self, flow: http.HTTPFlow) -> None:
-        if not flow.response or not flow.response.content:
-            return
-        
-        if not flow.request.path.startswith("/v1/content/") and not flow.request.path.startswith("/v2/content/"):
-            return
-        
+    def content(self, flow: http.HTTPFlow) -> None:
         api_version = "v1"
         if flow.request.path.startswith("/v2/"):
             api_version = "v2"
@@ -59,6 +54,12 @@ class ContentReplace:
         with open(content_path, "rb") as binary_file:
             flow.response.content = binary_file.read()          
         
+    def response(self, flow: http.HTTPFlow) -> None:
+        if not flow.response or not flow.response.content:
+            return
+        
+        if flow.request.path.startswith("/v1/content/") or flow.request.path.startswith("/v2/content/"):
+            self.content(flow)
             
     def request(self, flow: http.HTTPFlow) -> None:
         pass
