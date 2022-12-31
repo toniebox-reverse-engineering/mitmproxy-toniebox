@@ -1,8 +1,8 @@
 import logging
+import base64
 
 from pathlib import Path
 from mitmproxy import ctx, http
-
 
 class ContentReplace:
     def content(self, flow: http.HTTPFlow) -> None:
@@ -54,12 +54,26 @@ class ContentReplace:
         with open(content_path, "rb") as binary_file:
             flow.response.content = binary_file.read()          
         
+    def freshness_check(self, flow: http.HTTPFlow) -> None:
+        content_b64 = 'EAcYAyABKAEwATgDQAA=' #Contains no tonies to delete
+        b64_bytes = content_b64.encode('ascii')
+        content_bytes = base64.b64decode(b64_bytes)
+        flow.response.headers["Content-Length"] = str(len(content_bytes))
+        flow.response.content = content_bytes
+        
+        #message = message_bytes.decode('ascii')
+        #https://prod.de.tbs.toys/v1/freshness-check
+        #Content: 
+        #Content-Length: 14
+    
     def response(self, flow: http.HTTPFlow) -> None:
         if not flow.response or not flow.response.content:
             return
         
         if flow.request.path.startswith("/v1/content/") or flow.request.path.startswith("/v2/content/"):
             self.content(flow)
+        if flow.request.path.startswith("/v1/freshness-check"):
+            self.freshness_check(flow)
             
     def request(self, flow: http.HTTPFlow) -> None:
         pass
