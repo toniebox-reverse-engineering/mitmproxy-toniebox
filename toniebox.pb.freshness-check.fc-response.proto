@@ -1,0 +1,10 @@
+message TonieFreshnessCheckResponse {
+  repeated fixed64 tonie_marked = 1;
+  required int32 field2 = 2;
+  required int32 field3 = 3;
+  required int32 field4 = 4;
+  required int32 field5 = 5;
+  required int32 field6 = 6;
+  required int32 field7 = 7;
+  required int32 field8 = 8;
+}
