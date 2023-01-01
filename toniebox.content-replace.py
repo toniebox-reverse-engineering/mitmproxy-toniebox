@@ -14,8 +14,10 @@ from mitmproxy import http
 class ContentReplace:
     def __init__(self):
         self.module_dir = Path(__file__).parent
+        self.content_dir = Path(self.module_dir, "CONTENT")
         sys.path.append(self.module_dir)
-        print(self.module_dir)
+        
+        logging.warn(f"module_path={self.module_dir}, content_dir={self.content_dir}")
         
     def add_headers(self, headers):
         headers["Server"] = "openresty"
@@ -70,12 +72,18 @@ class ContentReplace:
         
         content_dir = content_id[:8].upper()
         content_file = content_id[8:].upper()
-        content_path = Path("CONTENT", content_dir, content_file)
-        content_nocloud_path = Path("CONTENT", content_dir, content_file + ".nocloud")
+        content_path = Path(self.content_dir, content_dir, content_file)
+        content_nocloud_path = Path(self.content_dir, content_dir, content_file + ".nocloud")
         
         if not content_nocloud_path.is_file():
-            return
+            if not self.is_valid_tonie_auth_header(flow.request.headers):
+                logging.warn(f"invalid authorization header, creating nocloud file")
+                Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
+                open(content_nocloud_path, 'a').close()
+            else:
+                return
         
+        logging.warn(f"skipping cloud download")
         self.handle_content(flow, content_path)
         
     def response_content(self, flow: http.HTTPFlow) -> None:
@@ -95,8 +103,8 @@ class ContentReplace:
         
         content_dir = content_id[:8].upper()
         content_file = content_id[8:].upper()
-        content_path = Path("CONTENT", content_dir, content_file)
-        content_nocloud_path = Path("CONTENT", content_dir, content_file + ".nocloud")
+        content_path = Path(self.content_dir, content_dir, content_file)
+        content_nocloud_path = Path(self.content_dir, content_dir, content_file + ".nocloud")
         logging.warn(f"FullPath={content_path.resolve()}, content_dir={content_dir}, content_file={content_file}")
         
         if flow.response.status_code == 200: #or flow.response.status_code == 206: partial content!
@@ -115,12 +123,13 @@ class ContentReplace:
             return
         
         logging.warn(f"Status code 410 - content unknown...")
-        #TODO: Refine, only create file if its a custom tag.
+        #TODO: Refine, only create file if its a custom tag (Auth header).
         
-        if not content_nocloud_path.is_file():
-            logging.warn(f"... creating nocloud file")
-            Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
-            open(content_nocloud_path, 'a').close()
+        # TODO: make configuratable
+        #if not content_nocloud_path.is_file():
+        #    logging.warn(f"... creating nocloud file")
+        #    Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
+        #    open(content_nocloud_path, 'a').close()
             
         #self.handle_content(flow, content_path)  
     
@@ -136,13 +145,20 @@ class ContentReplace:
         ]
         return result
     
+    def is_valid_tonie_auth_header(self, headers) -> bool:
+        if not 'Authorization' in headers:
+            return False
+        if headers["Authorization"] == "BD 0000000000000000000000000000000000000000000000000000000000000000":
+            return False
+        return True
+    
     def request_freshness_check(self, flow: http.HTTPFlow) -> None:              
         tonieInfos = TonieFreshnessCheckRequest()
         tonieInfos_mod = TonieFreshnessCheckRequest()
         tonieInfos.ParseFromString(flow.request.content)
         for info in tonieInfos.tonie_infos:
             path_parts = self.uid2path(info.uid)
-            content_nocloud_path = Path("CONTENT", path_parts[0], path_parts[1] + ".nocloud")
+            content_nocloud_path = Path(self.content_dir, path_parts[0], path_parts[1] + ".nocloud")
             logging.warn(f"FC-Request: uid={self.uid2text(info.uid)}, audioId={info.audio_id}")
             if content_nocloud_path.is_file():
                 logging.warn("Removed...")
@@ -166,7 +182,7 @@ class ContentReplace:
         for uid in tonieFCResponse.tonie_marked:
             logging.warn(f"FC-Response: uid={self.uid2text(uid)}")
             path_parts = self.uid2path(uid)
-            content_nocloud_path = Path("CONTENT", path_parts[0], path_parts[1] + ".nocloud")
+            content_nocloud_path = Path(self.content_dir, path_parts[0], path_parts[1] + ".nocloud")
             if content_nocloud_path.is_file():
                 logging.warn("Removed...")
             else:
@@ -195,11 +211,16 @@ class ContentReplace:
         
         content_dir = content_id[:8].upper()
         content_file = content_id[8:].upper()
-        content_path = Path("CONTENT", content_dir, content_file)
-        content_nocloud_path = Path("CONTENT", content_dir, content_file + ".nocloud")
-        
+        content_path = Path(self.content_dir, content_dir, content_file)
+        content_nocloud_path = Path(self.content_dir, content_dir, content_file + ".nocloud")
+                
         if not content_nocloud_path.is_file():
-            return
+            if not self.is_valid_tonie_auth_header(flow.request.headers):
+                logging.warn(f"invalid authorization header, creating nocloud file")
+                Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
+                open(content_nocloud_path, 'a').close()
+            else:
+                return
         
         logging.warn("Don't claim @ the cloud")
         
