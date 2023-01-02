@@ -10,7 +10,7 @@ set -o nounset
 
 # Start the ssh daemon
 echo "root:$ROOT_PASS"|chpasswd
-
+#TODO: Regenerate ssh_host_keys, may already in the docker image
 /usr/sbin/sshd -D &
 
 iptables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 80 -j REDIRECT --to-port 8080

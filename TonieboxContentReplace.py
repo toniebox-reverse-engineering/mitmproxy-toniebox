@@ -14,14 +14,13 @@ class TonieboxContentReplace:
     def __init__(self):
         logging.warn(f"Start: TonieboxContentReplace")
         self.module_dir = Path(__file__).parent
+        sys.path.append(self.module_dir)
 
         env_cont_dir = os.environ.get("TONIEBOX_CONTENT_DIR")
         if env_cont_dir is None:
             self.content_dir = Path(self.module_dir, "CONTENT")
         else:
             self.content_dir = Path(env_cont_dir)
-
-        sys.path.append(self.module_dir)
         
         logging.warn(f"module_path={self.module_dir}, content_dir={self.content_dir}")
         

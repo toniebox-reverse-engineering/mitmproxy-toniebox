@@ -31,6 +31,8 @@ class TonieboxClientCertSelect:
         else:
             self.fixed_cert = env_fixed_cert
             ctx.options.client_certs = str(Path(self.client_cert_dir, self.fixed_cert))
+
+        logging.warn(f"client_cert_dir={self.client_cert_dir}, fixed_cert={self.fixed_cert}")
         
     def getMacByIp(self, ip_address) -> bytes:
         #print(getmacbyip(str(ip_address)))

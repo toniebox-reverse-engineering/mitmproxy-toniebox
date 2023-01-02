@@ -19,16 +19,18 @@ services:
       - 8081:8081
     command: mitmweb --web-host 0.0.0.0 --mode transparent --ssl-insecure -s /home/mitmproxy/addons/TonieboxAddonStart.py
     volumes:
+      - certs:/home/mitmproxy/.mitmproxy
       - content:/home/mitmproxy/CONTENT
       - addons:/home/mitmproxy/addons
       - client-certs:/home/mitmproxy/client-certs
-      - certs:/home/mitmproxy/.mitmproxy
+      - config:/home/mitmproxy/config
       - ssh:/etc/ssh
     network_mode: host
     restart: unless-stopped
 volumes:
+  certs:
   content:
   addons:
   client-certs:
-  certs:
+  config:
   ssh:
