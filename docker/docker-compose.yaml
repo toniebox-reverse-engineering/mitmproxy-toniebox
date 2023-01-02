@@ -21,7 +21,6 @@ services:
     volumes:
       - certs:/home/mitmproxy/.mitmproxy
       - content:/home/mitmproxy/CONTENT
-      - addons:/home/mitmproxy/addons
       - client-certs:/home/mitmproxy/client-certs
       - config:/home/mitmproxy/config
       - ssh:/etc/ssh
@@ -30,7 +29,6 @@ services:
 volumes:
   certs:
   content:
-  addons:
   client-certs:
   config:
   ssh:
