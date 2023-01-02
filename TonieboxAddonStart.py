@@ -16,5 +16,5 @@ addons = [
     TonieboxAddonStart(),
     TonieboxTlsConfigAlt(),
     TonieboxContentReplace(),
-#    TonieboxClientCertSelect()
+    TonieboxClientCertSelect()
 ]

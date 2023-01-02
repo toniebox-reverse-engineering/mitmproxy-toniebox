@@ -6,6 +6,9 @@ services:
     image: <TO-BE-FILLED>
     environment:
       - NET_IF=eth2
+      - TONIEBOX_CHIP=cc3200 #cc3200/cc32xx
+      - ROOT_PASS=root #For SSH access (and tcpdump)
+      #- TONIEBOX_CLIENT_CERT="" #Use a fixed cert from the client_certs dir instead of autoselecting it
     tty: true
     privileged: true
     ports:
@@ -14,12 +17,13 @@ services:
       - 443:443
       - 8080:8080
       - 8081:8081
-    command: mitmweb --web-host 0.0.0.0 --mode transparent --ssl-insecure --set client_certs=/home/mitmproxy/client-certs/toniebox-v3.pem -s /home/mitmproxy/addons/TonieboxAddonStart.py
+    command: mitmweb --web-host 0.0.0.0 --mode transparent --ssl-insecure -s /home/mitmproxy/addons/TonieboxAddonStart.py
     volumes:
       - content:/home/mitmproxy/CONTENT
       - addons:/home/mitmproxy/addons
       - client-certs:/home/mitmproxy/client-certs
       - certs:/home/mitmproxy/.mitmproxy
+      - ssh:/etc/ssh
     network_mode: host
     restart: unless-stopped
 volumes:
@@ -27,3 +31,4 @@ volumes:
   addons:
   client-certs:
   certs:
+  ssh:
