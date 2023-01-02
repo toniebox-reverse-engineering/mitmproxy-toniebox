@@ -1,6 +1,7 @@
 import logging
 import base64
 import copy
+import os
 
 from pathlib import Path
 from mitmproxy import ctx, http
@@ -9,12 +10,17 @@ import sys
 from toniebox.pb.freshness_check.fc_request_pb2 import TonieFreshnessCheckRequest, TonieFCInfo
 from toniebox.pb.freshness_check.fc_response_pb2 import TonieFreshnessCheckResponse
 
-from mitmproxy import http
-
-class ContentReplace:
+class TonieboxContentReplace:
     def __init__(self):
+        logging.warn(f"Start: TonieboxContentReplace")
         self.module_dir = Path(__file__).parent
-        self.content_dir = Path(self.module_dir, "CONTENT")
+
+        env_cont_dir = os.environ.get("TONIEBOX_CONTENT_DIR")
+        if env_cont_dir is None:
+            self.content_dir = Path(self.module_dir, "CONTENT")
+        else:
+            self.content_dir = Path(env_cont_dir)
+
         sys.path.append(self.module_dir)
         
         logging.warn(f"module_path={self.module_dir}, content_dir={self.content_dir}")
@@ -250,4 +256,4 @@ class ContentReplace:
         elif flow.request.path.startswith("/v1/freshness-check"):
             self.response_freshness_check(flow)
         
-addons = [ContentReplace()]
+#addons = [TonieboxContentReplace()]

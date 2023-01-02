@@ -10,8 +10,9 @@ from mitmproxy import ctx, http, connection, proxy, tls
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 
-class ClientCertSelect:
+class TonieboxClientCertSelect:
     def __init__(self):
+        logging.warn(f"Start: TonieboxClientCertSelect")
         self.module_dir = Path(__file__).parent
         self.client_cert_dir = Path(self.module_dir, "client-certs")
         
@@ -172,4 +173,4 @@ class ClientCertSelect:
             client.error = "No cert found..."
             #data.server.error = "No cert found..."
                 
-addons = [ClientCertSelect()]
+#addons = [TonieboxClientCertSelect()]

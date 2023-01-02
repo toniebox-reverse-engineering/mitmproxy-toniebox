@@ -37,13 +37,15 @@ from cryptography.x509 import NameOID
 
 CERT_EXPIRY = datetime.timedelta(days=365)
 
-class TlsConfigAlt(TlsConfig):
+class TonieboxTlsConfigAlt(TlsConfig):
+    def __init__(self):
+        logging.warn(f"Start: TonieboxTlsConfigAlt")
     
     def configure(self, updated):
         super().configure(updated)
         
         certstore_path = os.path.expanduser(ctx.options.confdir)
-        self.certstore = CertStoreAlt.from_store(
+        self.certstore = TonieboxCertStoreAlt.from_store(
             path=certstore_path,
             basename=CONF_BASENAME,
             key_size=ctx.options.key_size,
@@ -89,7 +91,7 @@ class TlsConfigAlt(TlsConfig):
         return self.certstore.get_cert_alt(conn_context, altnames[0], altnames, organization)
         #return self.certstore.get_cert(altnames[0], altnames, organization)
 
-class CertStoreAlt(CertStore):
+class TonieboxCertStoreAlt(CertStore):
   
     def get_cert_alt(
         self,
@@ -203,4 +205,4 @@ class CertStoreAlt(CertStore):
         cert = builder.sign(private_key=privkey, algorithm=hashes.SHA256())  # type: ignore
         return Cert(cert)
     
-addons = [TlsConfigAlt()]
+#addons = [TonieboxTlsConfigAlt()]
