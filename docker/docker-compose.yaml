@@ -1,0 +1,29 @@
+version: '3'
+services:
+  mitmweb:
+    container_name: mitmproxy-toniebox
+    hostname: mitmproxy-toniebox
+    image: <TO-BE-FILLED>
+    environment:
+      - NET_IF=eth2
+    tty: true
+    privileged: true
+    ports:
+      - 8022:8022
+      - 80:80
+      - 443:443
+      - 8080:8080
+      - 8081:8081
+    command: mitmweb --web-host 0.0.0.0 --mode transparent --ssl-insecure --set client_certs=/home/mitmproxy/client-certs/toniebox-v3.pem -s /home/mitmproxy/addons/TonieboxAddonStart.py
+    volumes:
+      - content:/home/mitmproxy/CONTENT
+      - addons:/home/mitmproxy/addons
+      - client-certs:/home/mitmproxy/client-certs
+      - certs:/home/mitmproxy/.mitmproxy
+    network_mode: host
+    restart: unless-stopped
+volumes:
+  content:
+  addons:
+  client-certs:
+  certs:
