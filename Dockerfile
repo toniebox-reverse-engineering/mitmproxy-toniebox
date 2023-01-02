@@ -44,15 +44,12 @@ RUN useradd -mU mitmproxy \
 VOLUME [ \
     "/home/mitmproxy/.mitmproxy", \
     "/home/mitmproxy/CONTENT", \
-    "/home/mitmproxy/addons", \
     "/home/mitmproxy/client-certs", \
     "/home/mitmproxy/config", \
     "/etc/ssh" \
 ]
 
-COPY ../ /home/mitmproxy/addons
-
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY docker/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +rx /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
@@ -60,3 +57,5 @@ EXPOSE 80 443 8022 8080 8081
 
 CMD ["mitmweb --web-host 0.0.0.0 --mode transparent -s /home/mitmproxy/addons/TonieboxAddonStart.py"]
 #CMD ["mitmweb", "--web-host 0.0.0.0", "--mode transparent", "-s /home/mitmproxy/addons/TonieboxAddonStart.py"]
+
+COPY addons/ /home/mitmproxy/addons/
