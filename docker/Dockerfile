@@ -1,5 +1,12 @@
 FROM python:3.11-slim-bullseye
 
+ENV NET_IF="eth1"
+ENV ROOT_PASS="root"
+ENV TONIEBOX_CLIENT_CERT=""
+
+ENV TONIEBOX_CONTENT_DIR="/home/mitmproxy/CONTENT"
+ENV MITMPROXY_CERT_PATH="/home/mitmproxy/.mitmproxy"
+
 # Run the container in privileged mode
 USER root
 
@@ -14,15 +21,16 @@ RUN apt-get update \
     
 RUN mkdir -p /run/sshd
 # change password root
-RUN echo "root:root"|chpasswd
+RUN echo "root:$ROOT_PASS"|chpasswd
 # authorize SSH connection with root account
 RUN sed -ri 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -ri 's/#Port 22/Port 8022/' /etc/ssh/sshd_config
 
 RUN /etc/init.d/ssh start
 
 RUN pip install mitmproxy
-
 RUN useradd -mU mitmproxy
+RUN mkdir -p $MITMPROXY_CERT_PATH
 
 VOLUME /home/mitmproxy/.mitmproxy
 VOLUME /home/mitmproxy/CONTENT
@@ -33,6 +41,7 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +rx /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-EXPOSE 22 80 443 8080 8081 
+EXPOSE 80 443 8022 8080 8081 
 
-CMD ["mitmproxy"]
+CMD ["mitmweb --web-host 0.0.0.0 --mode transparent --ssl-insecure --set client_certs=/home/mitmproxy/client-certs/$TONIEBOX_CLIENT_CERT -s /home/mitmproxy/addons/TonieboxAddonStart.py"]
+#CMD ["mitmweb", "--web-host 0.0.0.0", "--mode transparent", "--ssl-insecure", "--set client_certs=/home/mitmproxy/client-certs/$TONIEBOX_CLIENT_CERT", "-s /home/mitmproxy/addons/TonieboxAddonStart.py"]
