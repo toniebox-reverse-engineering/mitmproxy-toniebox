@@ -14,32 +14,18 @@ import arpreq
 from scapy.layers.l2 import getmacbyip
 import binascii
 
+from TonieboxConfig import config
+
 class TonieboxClientCertSelect:
     def __init__(self):
         logging.warn(f"Start: TonieboxClientCertSelect")
-        self.module_dir = Path(__file__).parent
-
-        env_cert_dir = os.environ.get("TONIEBOX_CLIENT_CERT_DIR")
-        if env_cert_dir is None:
-            self.client_cert_dir = Path(self.module_dir, "client-certs")
-        else:
-            self.client_cert_dir = Path(env_cert_dir)
-
-        env_fixed_cert = os.environ.get("TONIEBOX_CLIENT_CERT")
-        if env_fixed_cert is None or env_fixed_cert == "":
-            self.fixed_cert = None
-        else:
-            self.fixed_cert = env_fixed_cert
-            ctx.options.client_certs = str(Path(self.client_cert_dir, self.fixed_cert))
-
-        logging.warn(f"client_cert_dir={self.client_cert_dir}, fixed_cert={self.fixed_cert}")
         
     def getMacByIp(self, ip_address) -> bytes:
         #print(getmacbyip(str(ip_address)))
         return arpreq.arpreq(str(ip_address))
 
     def client_connected(self, client: connection.Client):
-        if not self.fixed_cert is None:
+        if not config.fixed_cert is None:
             logging.warn("Using fixed client cert")
             return
 
@@ -47,10 +33,10 @@ class TonieboxClientCertSelect:
 
         found = False
         # List the files in the client certificate directory
-        client_cert_files = os.listdir(self.client_cert_dir)
+        client_cert_files = os.listdir(config.client_cert_dir)
         for client_cert_file in client_cert_files:
             # Read the client certificate file
-            with open(os.path.join(self.client_cert_dir, client_cert_file), "rb") as f:
+            with open(os.path.join(config.client_cert_dir, client_cert_file), "rb") as f:
                 client_cert_data = f.read()
 
             # Decode the client certificate file
@@ -64,7 +50,7 @@ class TonieboxClientCertSelect:
             if mac == client_cert_cn:
                 # Set the client certificate file as the client certificate for the upstream server
                 #ctx.options.upstream_cert = True
-                ctx.options.client_certs = str(Path(self.client_cert_dir, client_cert_file))
+                ctx.options.client_certs = str(Path(config.client_cert_dir, client_cert_file))
 
                 logging.warn("Found certificate!")
                 found = True

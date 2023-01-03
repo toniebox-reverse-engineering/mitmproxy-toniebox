@@ -1,13 +1,10 @@
-import sys
-import os
 import logging
-import importlib
 from pathlib import Path
 
 import mitmproxy
 from mitmproxy import ctx
 
-from TonieboxConfig import TonieboxConfig
+from TonieboxConfig import TonieboxConfig, config
 from TonieboxTlsConfigAlt import TonieboxTlsConfigAlt
 from TonieboxContentReplace import TonieboxContentReplace
 from TonieboxClientCertSelect import TonieboxClientCertSelect
@@ -18,7 +15,7 @@ class TonieboxAddonStart:
 
 addons = [
     TonieboxAddonStart(),
-    TonieboxConfig(),
+    config,
     TonieboxTlsConfigAlt(),
     TonieboxContentReplace(),
     TonieboxClientCertSelect()

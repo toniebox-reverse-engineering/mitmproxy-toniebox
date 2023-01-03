@@ -1,28 +1,17 @@
 import logging
-import base64
 import copy
-import os
 
 from pathlib import Path
-from mitmproxy import ctx, http
+from mitmproxy import ctx, http, tcp, flow
 
-import sys
 from toniebox.pb.freshness_check.fc_request_pb2 import TonieFreshnessCheckRequest, TonieFCInfo
 from toniebox.pb.freshness_check.fc_response_pb2 import TonieFreshnessCheckResponse
+
+from TonieboxConfig import config
 
 class TonieboxContentReplace:
     def __init__(self):
         logging.warn(f"Start: TonieboxContentReplace")
-        self.module_dir = Path(__file__).parent
-        sys.path.append(self.module_dir)
-
-        env_cont_dir = os.environ.get("TONIEBOX_CONTENT_DIR")
-        if env_cont_dir is None:
-            self.content_dir = Path(self.module_dir, "CONTENT")
-        else:
-            self.content_dir = Path(env_cont_dir)
-        
-        logging.warn(f"module_path={self.module_dir}, content_dir={self.content_dir}")
         
     def add_headers(self, headers):
         headers["Server"] = "openresty"
@@ -77,8 +66,8 @@ class TonieboxContentReplace:
         
         content_dir = content_id[:8].upper()
         content_file = content_id[8:].upper()
-        content_path = Path(self.content_dir, content_dir, content_file)
-        content_nocloud_path = Path(self.content_dir, content_dir, content_file + ".nocloud")
+        content_path = Path(config.content_dir, content_dir, content_file)
+        content_nocloud_path = Path(config.content_dir, content_dir, content_file + ".nocloud")
         
         if not content_nocloud_path.is_file():
             if not self.is_valid_tonie_auth_header(flow.request.headers):
@@ -108,8 +97,8 @@ class TonieboxContentReplace:
         
         content_dir = content_id[:8].upper()
         content_file = content_id[8:].upper()
-        content_path = Path(self.content_dir, content_dir, content_file)
-        content_nocloud_path = Path(self.content_dir, content_dir, content_file + ".nocloud")
+        content_path = Path(config.content_dir, content_dir, content_file)
+        content_nocloud_path = Path(config.content_dir, content_dir, content_file + ".nocloud")
         logging.warn(f"FullPath={content_path.resolve()}, content_dir={content_dir}, content_file={content_file}")
         
         if flow.response.status_code == 200: #or flow.response.status_code == 206: partial content!
@@ -163,7 +152,7 @@ class TonieboxContentReplace:
         tonieInfos.ParseFromString(flow.request.content)
         for info in tonieInfos.tonie_infos:
             path_parts = self.uid2path(info.uid)
-            content_nocloud_path = Path(self.content_dir, path_parts[0], path_parts[1] + ".nocloud")
+            content_nocloud_path = Path(config.content_dir, path_parts[0], path_parts[1] + ".nocloud")
             logging.warn(f"FC-Request: uid={self.uid2text(info.uid)}, audioId={info.audio_id}")
             if content_nocloud_path.is_file():
                 logging.warn("Removed...")
@@ -187,7 +176,7 @@ class TonieboxContentReplace:
         for uid in tonieFCResponse.tonie_marked:
             logging.warn(f"FC-Response: uid={self.uid2text(uid)}")
             path_parts = self.uid2path(uid)
-            content_nocloud_path = Path(self.content_dir, path_parts[0], path_parts[1] + ".nocloud")
+            content_nocloud_path = Path(config.content_dir, path_parts[0], path_parts[1] + ".nocloud")
             if content_nocloud_path.is_file():
                 logging.warn("Removed...")
             else:
@@ -216,8 +205,8 @@ class TonieboxContentReplace:
         
         content_dir = content_id[:8].upper()
         content_file = content_id[8:].upper()
-        content_path = Path(self.content_dir, content_dir, content_file)
-        content_nocloud_path = Path(self.content_dir, content_dir, content_file + ".nocloud")
+        content_path = Path(config.content_dir, content_dir, content_file)
+        content_nocloud_path = Path(config.content_dir, content_dir, content_file + ".nocloud")
                 
         if not content_nocloud_path.is_file():
             if not self.is_valid_tonie_auth_header(flow.request.headers):
