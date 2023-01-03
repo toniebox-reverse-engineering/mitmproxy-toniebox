@@ -1,34 +1,71 @@
 version: '3'
 services:
-  mitmweb:
-    container_name: mitmproxy-toniebox
-    hostname: mitmproxy-toniebox
-    image: <TO-BE-FILLED>
+  hackiebox-reverse:
+    container_name: hackiebox-reverse
+    hostname: hackiebox-reverse
+    image: <IMAGE-ID>
+    networks:
+      nginx-proxy-manager_default:
+      lan: 
+        ipv4_address: <IP>
     environment:
-      - NET_IF=eth2
+      - MITMPROXY_MODE=reverse 
+      - TONIEBOX_URL_PROD=home.revvox #custom local dns name for prod server (reverse proxy)
+      - TONIEBOX_URL_RTNL=rtnl.revvox #custom local dns name for rtnl server (reverse proxy)
       - TONIEBOX_CHIP=cc3200 #cc3200/cc32xx
       - ROOT_PASS=root #For SSH access (and tcpdump)
-      #- TONIEBOX_CLIENT_CERT="" #Use a fixed cert from the client_certs dir instead of autoselecting it
+      #- TONIEBOX_CLIENT_CERT=toniebox-v3.pem
     tty: true
-    privileged: true
     ports:
       - 8022:8022
-      - 80:80
       - 443:443
-      - 8080:8080
       - 8081:8081
-    command: mitmweb --web-host 0.0.0.0 --mode transparent --ssl-insecure -s /home/mitmproxy/addons/TonieboxAddonStart.py
+    command: mitmweb -s /home/mitmproxy/addons/TonieboxAddonStart.py
     volumes:
       - certs:/home/mitmproxy/.mitmproxy
       - content:/home/mitmproxy/CONTENT
       - client-certs:/home/mitmproxy/client-certs
       - config:/home/mitmproxy/config
       - ssh:/etc/ssh
-    network_mode: host
+    restart: unless-stopped
+  hackiebox-transparent:
+    container_name: hackiebox-transparent
+    hostname: hackiebox-transparent
+    image: <IMAGE-ID>
+    environment:
+      - MITMPROXY_MODE=transparent
+      #- NET_IF=eth1
+      - TONIEBOX_CHIP=cc32xx #cc3200/cc32xx
+      - ROOT_PASS=root #For SSH access (and tcpdump)
+      #- TONIEBOX_CLIENT_CERT=toniebox-v1.pem
+    tty: true
+    privileged: true
+    ports:
+      - 8022:8022
+      - 8080:8080
+      - 8081:8081
+    command: mitmweb -s /home/mitmproxy/addons/TonieboxAddonStart.py
+    volumes:
+      - certs:/home/mitmproxy/.mitmproxy
+      - content:/home/mitmproxy/CONTENT
+      - client-certs:/home/mitmproxy/client-certs
+      - config:/home/mitmproxy/config
+      - ssh:/etc/ssh
+    networks:
+      lan: 
+        ipv4_address: <>
+      mitm: 
+        ipv4_address: <>
     restart: unless-stopped
 volumes:
   certs:
   content:
-  client-certs:
   config:
+  client-certs:
   ssh:
+  addons:
+networks:
+  lan:
+    external: true
+  mitm:
+    external: true

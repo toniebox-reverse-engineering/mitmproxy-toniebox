@@ -13,19 +13,21 @@ echo "root:$ROOT_PASS"|chpasswd
 #TODO: Regenerate ssh_host_keys, may already in the docker image
 /usr/sbin/sshd -D &
 
-iptables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 80 -j REDIRECT --to-port 8080
-iptables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 443 -j REDIRECT --to-port 8080
-ip6tables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 80 -j REDIRECT --to-port 8080
-ip6tables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 443 -j REDIRECT --to-port 8080
-    
-sysctl -w net.ipv4.ip_forward=1
-sysctl -w net.ipv6.conf.all.forwarding=1
-sysctl -w net.ipv4.conf.all.send_redirects=0
+if [ "$MITMPROXY_MODE" = "transparent" ]; then
+  iptables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 80 -j REDIRECT --to-port 8080
+  iptables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 443 -j REDIRECT --to-port 8080
+  ip6tables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 80 -j REDIRECT --to-port 8080
+  ip6tables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 443 -j REDIRECT --to-port 8080
+      
+  sysctl -w net.ipv4.ip_forward=1
+  sysctl -w net.ipv6.conf.all.forwarding=1
+  sysctl -w net.ipv4.conf.all.send_redirects=0
+fi
 
 if [ "$TONIEBOX_CHIP" = "cc32xx" ]; then
-    source /opt/venv/mitmproxy/bin/activate
+  source /opt/venv/mitmproxy/bin/activate
 elif [ "$TONIEBOX_CHIP" = "cc3200" ]; then
-    source /opt/venv/mitmproxy-legacy/bin/activate
+  source /opt/venv/mitmproxy-legacy/bin/activate
 fi
 echo $TONIEBOX_CHIP
 mitmproxy --version
