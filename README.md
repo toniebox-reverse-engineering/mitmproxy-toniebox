@@ -26,3 +26,6 @@ Start the app via "docker-compose -f docker-compose.yaml up"
 You can access the logs via "docker logs --follow hackiebox-<variant-name>"
 Check the containers NET_IF IP with the port :8081 to check and inspect the communication
 You may ssh into the container via ssh root@<ip> -p 8022
+
+## HackieboxNG bootloader patches
+You may use the patches provided to allow the certificate to be loaded from flash:/cert/c2.der and set the URL to prod.revvox / rtnl.revvox.
