@@ -254,5 +254,14 @@ class TonieboxContentReplace:
             self.response_content(flow)
         elif flow.request.path.startswith("/v1/freshness-check"):
             self.response_freshness_check(flow)
+
+    def tcp_message(self, flow: tcp.TCPFlow):
+        #logging.warn(f"sni={flow.client_conn.sni}, peername={flow.client_conn.peername}, sockname={flow.client_conn.sockname}")
+        #flow.kill()
+        pass
+    def tcp_start(self, flow: tcp.TCPFlow):
+        flow.kill()
+        pass
+        
         
 #addons = [TonieboxContentReplace()]
