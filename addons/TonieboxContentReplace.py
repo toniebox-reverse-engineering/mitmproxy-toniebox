@@ -228,6 +228,8 @@ class TonieboxContentReplace:
         flow.response = response
             
     def request(self, flow: http.HTTPFlow) -> None:
+        logging.warn(f"host={flow.request.host}, pretty_host={flow.request.pretty_host}")
+
         if flow.request.path.startswith("/v1/content/") or flow.request.path.startswith("/v2/content/"):
             self.request_content(flow)
         elif flow.request.path.startswith("/v1/claim/"):
