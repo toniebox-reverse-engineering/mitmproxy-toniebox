@@ -37,12 +37,11 @@ class TonieboxConfig:
         self.url_fake_rtnl = env_url_rtnl
 
         if env_mode == "reverse":
-            ctx.options.listen_port = 443
             if self.mitmproxy_version == "8.0.0":
-                #ctx.options.listen_host = "192.168.123.175"
+                ctx.options.listen_port = 443
                 ctx.options.mode = f"reverse:https://{self.url_real_prod}:443"#, reverse:tls://{self.url_real_rtnl}:443@8090"
             else:
-                ctx.options.mode = [f"reverse:https://{self.url_real_prod}:443"]#, f"reverse:tls://{self.url_real_rtnl}:443@10.12.0.176:443"]
+                ctx.options.mode = [f"reverse:https://{self.url_real_prod}:443@:443", f"reverse:tls://{self.url_real_rtnl}:443@:444"]
 
             self.mode = env_mode
             #ctx.options.allow_hosts = [f"{self.url_fake_prod}"]
