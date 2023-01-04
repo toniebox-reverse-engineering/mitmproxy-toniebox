@@ -1,41 +1,14 @@
 version: '3'
 services:
-  hackiebox-reverse:
-    container_name: hackiebox-reverse
-    hostname: hackiebox-reverse
-    image: <IMAGE-ID>
-    networks:
-      nginx-proxy-manager_default:
-      lan: 
-        ipv4_address: <IP>
-    environment:
-      - MITMPROXY_MODE=reverse 
-      - TONIEBOX_URL_PROD=home.revvox #custom local dns name for prod server (reverse proxy)
-      - TONIEBOX_URL_RTNL=rtnl.revvox #custom local dns name for rtnl server (reverse proxy)
-      - TONIEBOX_CHIP=cc3200 #cc3200/cc32xx
-      - ROOT_PASS=root #For SSH access (and tcpdump)
-      #- TONIEBOX_CLIENT_CERT=toniebox-v3.pem
-    tty: true
-    ports:
-      - 8022:8022
-      - 443:443
-      - 8081:8081
-    command: mitmweb -s /home/mitmproxy/addons/TonieboxAddonStart.py
-    volumes:
-      - certs:/home/mitmproxy/.mitmproxy
-      - content:/home/mitmproxy/CONTENT
-      - client-certs:/home/mitmproxy/client-certs
-      - config:/home/mitmproxy/config
-      - ssh:/etc/ssh
-    restart: unless-stopped
   hackiebox-transparent:
     container_name: hackiebox-transparent
     hostname: hackiebox-transparent
     image: <IMAGE-ID>
     environment:
+      #- SSLKEYLOGFILE=/root/sslkeylogfile.txt
       - MITMPROXY_MODE=transparent
       #- NET_IF=eth1
-      - TONIEBOX_CHIP=cc32xx #cc3200/cc32xx
+      - TONIEBOX_CHIP=cc3200 #cc3200/cc32xx
       - ROOT_PASS=root #For SSH access (and tcpdump)
       #- TONIEBOX_CLIENT_CERT=toniebox-v1.pem
     tty: true
@@ -56,6 +29,51 @@ services:
         ipv4_address: <>
       mitm: 
         ipv4_address: <>
+    restart: unless-stopped
+  hackiebox-reverse:
+    container_name: hackiebox-reverse
+    hostname: hackiebox-reverse
+    image: <IMAGE-ID>
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      nginx-proxy-manager_default:
+      lan: 
+        ipv4_address: <IP>
+    environment:
+      #- SSLKEYLOGFILE=/root/sslkeylogfile.txt
+      - MITMPROXY_MODE=reverse 
+      - TONIEBOX_CHIP=cc3200 #cc3200/cc32xx
+      - TONIEBOX_URL_PROD=prod.revvox #custom local dns name for prod server (reverse proxy)
+      - TONIEBOX_URL_RTNL=rtnl.revvox #custom local dns name for rtnl server (reverse proxy)
+      - ROOT_PASS=root #For SSH access (and tcpdump)
+      #- TONIEBOX_CLIENT_CERT=toniebox-v3.pem
+    tty: true
+    ports:
+      - 8022:8022
+      - 443:443
+      - 444:444
+      - 8081:8081
+    command: mitmweb -s /home/mitmproxy/addons/TonieboxAddonStart.py
+    volumes:
+      - certs:/home/mitmproxy/.mitmproxy
+      - content:/home/mitmproxy/CONTENT
+      - client-certs:/home/mitmproxy/client-certs
+      - config:/home/mitmproxy/config
+      - ssh:/etc/ssh
+    restart: unless-stopped
+  hackiebox-reverse-nginx:
+    container_name: hackiebox-reverse-nginx
+    hostname: hackiebox-reverse-nginx
+    image: <IMAGE-ID-NGINX>
+    networks:
+      lan: 
+        ipv4_address: <IP>
+    environment:
+      - RTNL_UPSTREAM=hackiebox-reverse
+    ports:
+      - 443:443
     restart: unless-stopped
 volumes:
   certs:

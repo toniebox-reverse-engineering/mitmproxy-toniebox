@@ -1,6 +1,34 @@
+FROM python:3.9-slim-bullseye as basebuilder  
+ARG MITMPROXY_BRANCH="9.0.1" \
+    MITMPROXY_LEGACY="8.0.0"
+
+# Install packages and configure ssh
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc libpq-dev python3-dev python3-wheel \
+    && apt-get install -y --no-install-recommends git \
+    && apt-get install -y --no-install-recommends build-essential libssl-dev libffi-dev python3-dev cargo pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone --depth 1 --branch $MITMPROXY_BRANCH https://github.com/mitmproxy/mitmproxy.git /opt/mitmproxy
+#Downgrade OpenSSL so it supports SHA-1 for v1/v2 boxes
+RUN sed -ri 's/"cryptography([>=]{1,2}[0-9\.,]+[<=]{1,2}[0-9\.]+)"/#Install manually/' /opt/mitmproxy/setup.py
+
+RUN python -m venv /opt/venv/mitmproxy \
+    && /opt/venv/mitmproxy/bin/pip install arpreq scapy \
+    && /opt/venv/mitmproxy/bin/pip install cryptography==38.0.4 --no-binary cryptography \
+    && /opt/venv/mitmproxy/bin/pip install -e "/opt/mitmproxy/.[dev]"
+
+RUN python -m venv /opt/venv/mitmproxy-legacy \
+    && /opt/venv/mitmproxy-legacy/bin/pip install arpreq scapy \
+    && /opt/venv/mitmproxy-legacy/bin/pip install mitmproxy==$MITMPROXY_LEGACY arpreq scapy
+
 FROM python:3.9-slim-bullseye
 
-EXPOSE 80 443 8022 8080 8081 8082
+EXPOSE 80 443 444 8022 8080 8081
+
+COPY --from=basebuilder \
+    /opt/mitmproxy /opt/ \
+    /opt/venv /opt/
 
 # Run the container in privileged mode
 USER root
@@ -16,32 +44,19 @@ ENV NET_IF="eth1" \
     TONIEBOX_URL_RTNL="rtnl.bxcl.de" \
     MITMPROXY_CERT_PATH="/home/mitmproxy/.mitmproxy"  \
     MITMPROXY_MODE="transparent" 
-    
-ARG MITMPROXY_VERSION_LEGACY="8.0.0" \
-    MITMPROXY_VERSION="9.0.1"
 
 # Install packages and configure ssh
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gosu \
-    && apt-get install -y --no-install-recommends tcpdump \
-    && apt-get install -y --no-install-recommends openssh-server \
-    && apt-get install -y --no-install-recommends iptables \
-    && apt-get install -y --no-install-recommends iproute2 \
+    && apt-get install -y --no-install-recommends tcpdump openssh-server \
+    && apt-get install -y --no-install-recommends iptables iproute2 \
     && apt-get install -y --no-install-recommends arping \
-    && apt-get install -y --no-install-recommends gcc libpq-dev python3-dev python3-wheel \
     && rm -rf /var/lib/apt/lists/*
     
 # Prepare SSH
 RUN mkdir -p /run/sshd \
     && sed -ri 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && sed -ri 's/#Port 22/Port 8022/' /etc/ssh/sshd_config
-
-RUN python -m venv /opt/venv/mitmproxy-legacy \
-    #&& /opt/venv/mitmproxy-legacy/bin/pip install --upgrade pip \
-    && /opt/venv/mitmproxy-legacy/bin/pip install mitmproxy==$MITMPROXY_VERSION_LEGACY arpreq scapy
-RUN python -m venv /opt/venv/mitmproxy \
-    #&& /opt/venv/mitmproxy/bin/pip install --upgrade pip \
-    && /opt/venv/mitmproxy/bin/pip install mitmproxy==$MITMPROXY_VERSION arpreq scapy
 
 RUN useradd -mU mitmproxy \
     && mkdir -p $MITMPROXY_CERT_PATH
