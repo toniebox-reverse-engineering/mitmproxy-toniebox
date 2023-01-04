@@ -1,0 +1,10 @@
+events {
+  worker_connections  1024;
+}
+
+stream {
+  server {
+    listen     443;
+    proxy_pass $RTNL_UPSTREAM:444;
+  }
+}
