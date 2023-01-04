@@ -13,6 +13,8 @@ echo "root:$ROOT_PASS"|chpasswd
 #TODO: Regenerate ssh_host_keys, may already in the docker image
 /usr/sbin/sshd -D &
 
+ip addr
+
 if [ "$MITMPROXY_MODE" = "transparent" ]; then
   iptables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 80 -j REDIRECT --to-port 8080
   iptables -t nat -A PREROUTING -i $NET_IF -p tcp --dport 443 -j REDIRECT --to-port 8080
