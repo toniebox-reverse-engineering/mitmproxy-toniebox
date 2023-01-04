@@ -90,5 +90,7 @@ class TonieboxConfig:
 
         logging.warn(f"client_cert_dir={self.client_cert_dir}, fixed_cert={self.fixed_cert}")
 
+        ctx.options.connection_strategy = "lazy"
+
 config = TonieboxConfig()
 #addons = [config]
