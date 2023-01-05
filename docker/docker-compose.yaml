@@ -8,9 +8,9 @@ services:
       #- SSLKEYLOGFILE=/root/sslkeylogfile.txt
       - MITMPROXY_MODE=transparent
       #- NET_IF=eth1
-      - TONIEBOX_CHIP=cc3200 #cc3200/cc32xx
       - ROOT_PASS=root #For SSH access (and tcpdump)
-      #- TONIEBOX_CLIENT_CERT=toniebox-v1.pem
+      #- TONIEBOX_FIXED_CERT=toniebox-v1.pem
+      #- TONIEBOX_FALLBACK_CERT=toniebox-v1.pem
     tty: true
     privileged: true
     ports:
@@ -26,9 +26,9 @@ services:
       - ssh:/etc/ssh
     networks:
       lan: 
-        ipv4_address: <>
+        ipv4_address: <IP-T-LAN>
       mitm: 
-        ipv4_address: <>
+        ipv4_address: <IP-T-MITM>
     restart: unless-stopped
   hackiebox-reverse:
     container_name: hackiebox-reverse
@@ -40,15 +40,15 @@ services:
     networks:
       nginx-proxy-manager_default:
       lan: 
-        ipv4_address: <IP>
+        ipv4_address: <IP-N-LAN>
     environment:
       #- SSLKEYLOGFILE=/root/sslkeylogfile.txt
       - MITMPROXY_MODE=reverse 
-      - TONIEBOX_CHIP=cc3200 #cc3200/cc32xx
       - TONIEBOX_URL_PROD=prod.revvox #custom local dns name for prod server (reverse proxy)
       - TONIEBOX_URL_RTNL=rtnl.revvox #custom local dns name for rtnl server (reverse proxy)
       - ROOT_PASS=root #For SSH access (and tcpdump)
-      #- TONIEBOX_CLIENT_CERT=toniebox-v3.pem
+      #- TONIEBOX_FIXED_CERT=toniebox-v3.pem
+      #- TONIEBOX_FALLBACK_CERT=toniebox-v3.pem
     tty: true
     ports:
       - 8022:8022
@@ -69,9 +69,9 @@ services:
     image: <IMAGE-ID-NGINX>
     networks:
       lan: 
-        ipv4_address: <IP>
+        ipv4_address: <IP-R-LAN>
     environment:
-      - RTNL_UPSTREAM=hackiebox-reverse
+      - RTNL_UPSTREAM=hackiebox-reverse #CANNOT BE CHANGED, DOESN'T WORK!!!
     ports:
       - 443:443
     restart: unless-stopped

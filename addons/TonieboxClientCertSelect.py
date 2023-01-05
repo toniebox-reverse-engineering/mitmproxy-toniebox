@@ -24,6 +24,7 @@ class TonieboxClientCertSelect:
         #print(getmacbyip(str(ip_address)))
         return arpreq.arpreq(str(ip_address))
 
+
     def client_connected(self, client: connection.Client):
         if not config.fixed_cert is None:
             logging.warn("Using fixed client cert")
@@ -56,11 +57,24 @@ class TonieboxClientCertSelect:
                 found = True
                 break
         if not found:
+            if not config.fallback_cert is None:
+                ctx.options.client_certs = str(Path(config.client_cert_dir, config.fallback_cert))
+                logging.warn("Using fallback client cert")
+                return
             #ctx.options.upstream_cert = False
             logging.error("Found no certificate...")
             client.error = "No cert found..."
             #data.server.error = "No cert found..."
     def server_connect(self, data: proxy.server_hooks.ServerConnectionHookData):
+        #print(data)
+        is_rtnl_ip = False
+        for ip in config.rtnl_ips:
+            if ip == data.server.sni:
+                is_rtnl_ip = True
+                break
+        if data.server.sni == "rtnl.bxcl.de" or is_rtnl_ip:
+            data.server.error = "We don't like sniffers!"
+            return
         print(f"client_certs={ctx.options.client_certs}")
 
                 

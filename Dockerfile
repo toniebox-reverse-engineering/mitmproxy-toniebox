@@ -1,6 +1,5 @@
 FROM python:3.9-slim-bullseye as basebuilder  
-ARG MITMPROXY_BRANCH="9.0.1" \
-    MITMPROXY_LEGACY="8.0.0"
+ARG MITMPROXY_BRANCH="9.0.1"
 
 # Install packages and configure ssh
 RUN apt-get update \
@@ -14,13 +13,9 @@ RUN git clone --depth 1 --branch $MITMPROXY_BRANCH https://github.com/mitmproxy/
 RUN sed -ri 's/"cryptography([>=]{1,2}[0-9\.,]+[<=]{1,2}[0-9\.]+)"/#Install manually/' /opt/mitmproxy/setup.py
 
 RUN python -m venv /opt/venv/mitmproxy \
-    && /opt/venv/mitmproxy/bin/pip install arpreq scapy \
+    && /opt/venv/mitmproxy/bin/pip install arpreq scapy dnspython \
     && /opt/venv/mitmproxy/bin/pip install cryptography==38.0.4 --no-binary cryptography \
     && /opt/venv/mitmproxy/bin/pip install -e "/opt/mitmproxy/.[dev]"
-
-RUN python -m venv /opt/venv/mitmproxy-legacy \
-    && /opt/venv/mitmproxy-legacy/bin/pip install arpreq scapy \
-    && /opt/venv/mitmproxy-legacy/bin/pip install mitmproxy==$MITMPROXY_LEGACY arpreq scapy
 
 FROM python:3.9-slim-bullseye
 
@@ -36,10 +31,10 @@ USER root
 ENV NET_IF="eth1" \
     ROOT_PASS="0xbadbee" \
     TONIEBOX_CONTENT_DIR="/home/mitmproxy/CONTENT" \
-    TONIEBOX_CLIENT_CERT="" \
+    TONIEBOX_FIXED_CERT="" \
+    TONIEBOX_FALLBACK_CERT="" \
     TONIEBOX_CLIENT_CERT_DIR="/home/mitmproxy/client-certs" \
     TONIEBOX_CONFIG_DIR="/home/mitmproxy/config" \
-    TONIEBOX_CHIP="cc3200" \
     TONIEBOX_URL_PROD="prod.de.tbs.toys" \
     TONIEBOX_URL_RTNL="rtnl.bxcl.de" \
     MITMPROXY_CERT_PATH="/home/mitmproxy/.mitmproxy"  \
@@ -52,7 +47,12 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends iptables iproute2 \
     && apt-get install -y --no-install-recommends arping \
     && rm -rf /var/lib/apt/lists/*
-    
+
+# Fix OpenSSL to support SHA-1
+RUN sed -ri 's/CipherString = DEFAULT@SECLEVEL=[0-9]/CipherString = DEFAULT@SECLEVEL=1/' /etc/ssl/openssl.cnf \
+#    && sed -ri 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1.0/' /etc/ssl/openssl.cnf \
+    && sed -i '1iopenssl_conf = default_conf' /etc/ssl/openssl.cnf
+
 # Prepare SSH
 RUN mkdir -p /run/sshd \
     && sed -ri 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \

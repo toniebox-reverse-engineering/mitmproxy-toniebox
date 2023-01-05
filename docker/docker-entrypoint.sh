@@ -26,12 +26,7 @@ if [ "$MITMPROXY_MODE" = "transparent" ]; then
   sysctl -w net.ipv4.conf.all.send_redirects=0
 fi
 
-if [ "$TONIEBOX_CHIP" = "cc32xx" ]; then
-  source /opt/venv/mitmproxy/bin/activate
-elif [ "$TONIEBOX_CHIP" = "cc3200" ]; then
-  source /opt/venv/mitmproxy-legacy/bin/activate
-fi
-echo $TONIEBOX_CHIP
+source /opt/venv/mitmproxy/bin/activate
 mitmproxy --version
 
 echo "$@"

@@ -1,6 +1,7 @@
 import sys
 import os
 import logging
+import dns.resolver
 from pathlib import Path
 
 import mitmproxy
@@ -21,8 +22,8 @@ class TonieboxConfig:
         env_cont_dir = os.environ.get("TONIEBOX_CONTENT_DIR")
         #
         env_cert_dir = os.environ.get("TONIEBOX_CLIENT_CERT_DIR")
-        env_fixed_cert = os.environ.get("TONIEBOX_CLIENT_CERT")
-
+        env_fixed_cert = os.environ.get("TONIEBOX_FIXED_CERT")
+        env_fallback_cert = os.environ.get("TONIEBOX_FALLBACK_CERT")
 
         if env_conf_dir is None:
             self.config_dir = Path(self.module_dir, "config")
@@ -37,20 +38,13 @@ class TonieboxConfig:
         self.url_fake_rtnl = env_url_rtnl
 
         if env_mode == "reverse":
-            if self.mitmproxy_version == "8.0.0":
-                ctx.options.listen_port = 443
-                ctx.options.mode = f"reverse:https://{self.url_real_prod}:443"#, reverse:tls://{self.url_real_rtnl}:443@8090"
-            else:
-                ctx.options.mode = [f"reverse:https://{self.url_real_prod}:443@:443", f"reverse:tls://{self.url_real_rtnl}:443@:444"]
+            ctx.options.mode = [f"reverse:https://{self.url_real_prod}:443@:443", f"reverse:tls://{self.url_real_rtnl}:443@:444"]
 
             self.mode = env_mode
             #ctx.options.allow_hosts = [f"{self.url_fake_prod}"]
             #ctx.options.tcp_hosts = [f"{self.url_fake_rtnl}"]
         else:
-            if self.mitmproxy_version == "8.0.0":
-                ctx.options.mode = "transparent"
-            else:
-                ctx.options.mode = ["transparent"]
+            ctx.options.mode = ["transparent"]
             self.mode = "transparent"
             #ctx.options.allow_hosts = [f"{self.url_real_prod}"]
             #ctx.options.tcp_hosts = [f"{self.url_real_rtnl}"]
@@ -87,9 +81,19 @@ class TonieboxConfig:
             self.fixed_cert = env_fixed_cert
             ctx.options.client_certs = str(Path(self.client_cert_dir, self.fixed_cert))
 
-        logging.warn(f"client_cert_dir={self.client_cert_dir}, fixed_cert={self.fixed_cert}")
+        if env_fallback_cert is None or env_fallback_cert == "":
+            self.fallback_cert = None
+        else:
+            self.fallback_cert = env_fallback_cert
+            ctx.options.client_certs = str(Path(self.client_cert_dir, self.fallback_cert))
 
-        ctx.options.connection_strategy = "lazy"
+        logging.warn(f"client_cert_dir={self.client_cert_dir}, fixed_cert={self.fixed_cert}, fallback_cert={self.fallback_cert}")
+
+        self.rtnl_ips = []
+        rtnl_ips = dns.resolver.query("rtnl.bxcl.de", 'A')
+        for ip in rtnl_ips:
+            self.rtnl_ips.append(ip.address)
+        ctx.options.connection_strategy = "lazy" #works, but loses information in transparent mode as the commonname and date
 
 config = TonieboxConfig()
 #addons = [config]

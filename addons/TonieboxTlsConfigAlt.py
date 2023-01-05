@@ -35,7 +35,9 @@ from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography.x509 import ExtendedKeyUsageOID
 from cryptography.x509 import NameOID
 
-CERT_EXPIRY = datetime.timedelta(days=365)
+from TonieboxConfig import config
+
+CERT_EXPIRY = datetime.timedelta(days=3650)
 
 class TonieboxTlsConfigAlt(TlsConfig):
     def __init__(self):
@@ -171,10 +173,10 @@ class TonieboxCertStoreAlt(CertStore):
         )
         builder = builder.public_key(cacert.public_key())
 
-        now = datetime.datetime.now()
+        start = datetime.datetime(2016, 1, 1)
         if upstream_cert is None:
-            builder = builder.not_valid_before(now - datetime.timedelta(days=2))
-            builder = builder.not_valid_after(now + CERT_EXPIRY)
+            builder = builder.not_valid_before(start - datetime.timedelta(days=2))
+            builder = builder.not_valid_after(start + CERT_EXPIRY)
         else:
             builder = builder.not_valid_before(upstream_cert.notbefore)
             builder = builder.not_valid_after(upstream_cert.notafter)
@@ -203,6 +205,9 @@ class TonieboxCertStoreAlt(CertStore):
             x509.SubjectAlternativeName(ss), critical=not is_valid_commonname
         )
         cert = builder.sign(private_key=privkey, algorithm=hashes.SHA256())  # type: ignore
+        with open(f"/home/mitmproxy/config/{commonname}-cert.{config.mode}.{config.mitmproxy_version}.crt", "wb") as f:
+            f.write(cert.public_bytes(serialization.Encoding.PEM))
+
         return Cert(cert)
     
 #addons = [TonieboxTlsConfigAlt()]
