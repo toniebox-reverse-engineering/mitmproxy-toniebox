@@ -6,5 +6,6 @@ stream {
   server {
     listen     443;
     proxy_pass $RTNL_UPSTREAM:444;
+    #proxy_protocol on; #not supported by mitmproxy :(
   }
 }
