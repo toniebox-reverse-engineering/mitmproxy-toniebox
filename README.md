@@ -1,4 +1,4 @@
-# Hackiebox-Server to mitm the Boxine Cloud
+# Hackiebox-server to mitm the Boxine Cloud
 You may create a vm / lxc with docker.
 
 ## Image preperation
@@ -8,7 +8,7 @@ Just "docker build ." your image and put the hash into "<IMAGE-ID>" of the docke
 Select the variant you want to use. You may remove the variant from the docker-compose.yaml you don't need.
 
 ### Reverse Proxy
-You'll need one network (may be two in the near future, for rtnl). Please reconfigure your DNS so prod.de.tbs.toys points to the ip of your container. Please set rtnl.bxcl.de to 127.0.0.1 or something invalid. This blocks the logs of the box to be sent to the cloud. 
+You'll need one network. Please reconfigure your DNS so prod.de.tbs.toys points to the ip of your reverse container. Please set rtnl.bxcl.de to the ip of the nginx container.  
 
 ### Transparent Proxy
 You'll need two networks. One is a normal LAN, the other (mitm) should have a DHCP that reconfigures the gateway-ip to the ip of the container itself. You may need to set the NET_IF variable to the mitm interface.
