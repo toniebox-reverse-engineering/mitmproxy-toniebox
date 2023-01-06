@@ -251,8 +251,15 @@ class TonieboxContentReplace:
         #flow.kill()
         pass
     def tcp_start(self, flow: tcp.TCPFlow):
-        flow.kill()
-        pass
-        
+        #tcp_start only triggers on rtnl anyway
+        flow.kill() 
+        return
+        is_rtnl_ip = False
+        for ip in config.rtnl_ips:
+            if ip == flow.server_conn.sni:
+                is_rtnl_ip = True
+                break
+        if is_rtnl_ip:
+            flow.kill() #Already initiated connection to server TBD
         
 #addons = [TonieboxContentReplace()]

@@ -89,7 +89,7 @@ class TonieboxConfig:
 
         logging.warn(f"client_cert_dir={self.client_cert_dir}, fixed_cert={self.fixed_cert}, fallback_cert={self.fallback_cert}")
 
-        self.rtnl_ips = []
+        self.rtnl_ips = ["rtnl.bxcl.de"]
         rtnl_ips = dns.resolver.query("rtnl.bxcl.de", 'A')
         for ip in rtnl_ips:
             self.rtnl_ips.append(ip.address)
