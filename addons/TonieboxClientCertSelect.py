@@ -25,12 +25,10 @@ class TonieboxClientCertSelect:
         return arpreq.arpreq(str(ip_address))
 
 
-    def client_connected(self, client: connection.Client):
-        if not config.fixed_cert is None:
-            logging.warn("Using fixed client cert")
-            return
-
-        mac = binascii.unhexlify(self.getMacByIp(client.address[0]).replace(':', ''))
+    #def client_connected(self, client: connection.Client):
+    def server_connect(self, data: proxy.server_hooks.ServerConnectionHookData):
+        if config.fixed_cert is None:
+            mac = binascii.unhexlify(self.getMacByIp(data.client.address[0]).replace(':', ''))
 
         found = False
         # List the files in the client certificate directory
@@ -57,15 +55,17 @@ class TonieboxClientCertSelect:
                 found = True
                 break
         if not found:
-            if not config.fallback_cert is None:
-                ctx.options.client_certs = str(Path(config.client_cert_dir, config.fallback_cert))
-                logging.warn("Using fallback client cert")
-                return
+                if config.fallback_cert is None:
             #ctx.options.upstream_cert = False
             logging.error("Found no certificate...")
-            client.error = "No cert found..."
+                    data.client.error = "No cert found..."
             #data.server.error = "No cert found..."
-    def server_connect(self, data: proxy.server_hooks.ServerConnectionHookData):
+                else:
+                    ctx.options.client_certs = str(Path(config.client_cert_dir, config.fallback_cert))
+                    logging.warn("Using fallback client cert")
+        else:
+            logging.warn("Using fixed client cert")
+
         #print(data)
         is_rtnl_ip = False
         for ip in config.rtnl_ips:
