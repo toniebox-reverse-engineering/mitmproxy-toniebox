@@ -866,6 +866,17 @@ def parse_grpc_messages(
         try:
             if len(data) <= 4:
                 break
+            
+            ## Workaround!
+            if data[0] == 0 and data[1] != 0: #fix if two byte off
+                dataArray = bytearray(data)
+                dataArray.insert(0, 0)
+                data = bytes(dataArray)
+            if data[0] == 0 and data[1] == 0 and data[2] != 0: #fix if one byte off
+                dataArray = bytearray(data)
+                dataArray.insert(0, 0)
+                data = bytes(dataArray)
+                
             length = struct.unpack("!i", data[:4])[0]
             if len(data) < 4 + length:
                 break
@@ -876,7 +887,7 @@ def parse_grpc_messages(
             break
 
         data = data[4 + length :]
-        yield decoded_message
+        yield data, decoded_message
 
 
 # hacky fix for mitmproxy issue:
