@@ -863,22 +863,20 @@ def parse_grpc_messages(
     was compressed, along with the raw message data (decompressed) for each gRPC message
     contained in the body data"""
     while data:
-        if len(data) <= 4:
-            break
-        length = struct.unpack("!i", data[:4])[0]
-        if len(data) < 4 + length:
-            break
-        decoded_message = struct.unpack("!%is" % length, data[4: 4 + length])[0]
         try:
-            pass
+            if len(data) <= 4:
+                break
+            length = struct.unpack("!i", data[:4])[0]
+            if len(data) < 4 + length:
+                break
+            decoded_message = struct.unpack("!%is" % length, data[4: 4 + length])[0]
         except Exception as err:
             print("Error: " + str(err))
             #raise err
-            yield False, None
             break
 
-        yield decoded_message
         data = data[4 + length :]
+        yield decoded_message
 
 
 # hacky fix for mitmproxy issue:
