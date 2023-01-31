@@ -44,7 +44,7 @@ There may be additional headers such as a content-length or authoritation if nee
 
 ## Endpoints
 ### v1-time (GET /v1/time) 
-Receive the time. May be needed for the TLS-certificates. 
+Receive the time in unix time format. May be needed for the TLS-certificates. 
 
 #### Response-Headers
 | Header | Description | Example |
@@ -53,19 +53,8 @@ Receive the time. May be needed for the TLS-certificates.
 | Content-Type | | text/plain; charset=utf-8 |
 #### Response
     1675100403
-### v1-log (POST /v1/log) 
-Unknown purpose
-
-#### Request-Headers
-| Header | Description | Example |
-|---|---|---|
-| Content-Length | integer | 10 |
-#### Request
-    976 (-111)
-#### Response
-    HTTP/1.1 204 No Content
-    Server: openresty
-    Connection: keep-alive
+#### This value would correspond to 
+    Mon Jan 30 2023 17:40:03 GMT+0000
 
 ### v1-ota (GET /v1/ota/%file-id%?cv=%file-ts%)
 Updates several files within the box.
