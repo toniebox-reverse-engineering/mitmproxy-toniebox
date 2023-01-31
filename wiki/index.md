@@ -13,7 +13,10 @@ There may be additional headers such as a content-length or authoritation if nee
 | hw | 7-digit-number |  |
 | firmware-ts | unix-timestamp | 1640950635 |
 | box-color | Box' color (only esp32) | RoseRed |
-##### cc3200 (TODO)
+##### cc3200
+    GET https://prod.de.tbs.toys/%path% HTTP/1.1
+    Host: prod.de.tbs.toys
+    User-Agent: TB/%firmware-ts% SP/%sp% HW/%hw%
 
 ##### cc3235
     GET https://prod.de.tbs.toys/%path% HTTP/1.1
