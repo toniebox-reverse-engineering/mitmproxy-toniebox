@@ -144,6 +144,23 @@ Gets the content by uid and a password. If the content is know it sent back via 
 | Content-Length | integer | 23232 |
 | Content-Type | | binary/octet-stream |
 
+### v1-claim (GET /v1/claim/%uid-rev%)
+
+#### Variables 
+| Variable | Description | Example |
+|---|---|---|
+| uid-rev | 8-Byte UID reversed | 3e3a1aa3500304e0 |
+| content-pass | Memory-content of the tag (32-byte hex) | 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef |
+#### Request-Headers
+| Header | Description | Example |
+|---|---|---|
+| Authorization | Contains the "password" for the content to download | BD: %content-pass% |
+
+#### Response-Headers
+| Header | Description | Example |
+|---|---|---|
+| Content-Length | integer | 0 |
+
 # rtnl.bxcl.de
 ## Basics
 The communication is based on a TLS stream and **protobuf** and is unidirectional towards boxine. It's (nearly) identical to the output via UART. 
