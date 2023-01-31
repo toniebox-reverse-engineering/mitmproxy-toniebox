@@ -1,6 +1,6 @@
 # prod.de.tbs.toys
 ## Basics
-The communication is based on HTTPS (TLS over HTTP).
+The communication is based on HTTPS (TLS over HTTP). The box authenticates with a client certificate (private.der/client.der) to the server. The cc3200 based boxed may use an outdated sha1 based algorithm that may leed to problems with modern OpenSSL versions.
 
 ### Request
 Every request contains a user-agent header with information about the current running firmware and the box' hardware.
