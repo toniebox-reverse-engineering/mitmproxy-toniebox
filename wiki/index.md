@@ -42,7 +42,7 @@ There may be additional headers such as a content-length or authoritation if nee
 
 ## Endpoints
 ### v1-time (GET /v1/time) 
-Receive the time. May be needed for the TLS-certificates. 
+Receive the time in unix time format. May be needed for the TLS-certificates. 
 
 #### Response-Headers
 | Header | Description | Example |
@@ -51,6 +51,8 @@ Receive the time. May be needed for the TLS-certificates.
 | Content-Type | | text/plain; charset=utf-8 |
 #### Response
     1675100403
+#### This value would correspond to 
+    Mon Jan 30 2023 17:40:03 GMT+0000
 
 ### v1-ota (GET /v1/ota/%file-id%?cv=%file-ts%)
 Updates several files within the box.
