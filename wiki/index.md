@@ -55,6 +55,20 @@ Receive the time. May be needed for the TLS-certificates.
 #### Response
     1675100403
 
+### v1-log (POST /v1/log) 
+Unknown purpose
+
+#### Request-Headers
+| Header | Description | Example |
+|---|---|---|
+| Content-Length | integer | 10 |
+#### Request
+    976 (-111)
+#### Response
+    HTTP/1.1 204 No Content
+    Server: openresty
+    Connection: keep-alive
+
 ### v1-ota (GET /v1/ota/%file-id%?cv=%file-ts%)
 Updates several files within the box.
 
