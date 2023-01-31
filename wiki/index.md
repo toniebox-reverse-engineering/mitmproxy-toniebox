@@ -1,6 +1,6 @@
 # prod.de.tbs.toys
 ## Basics
-The communication is based on HTTPS (TLS over HTTP). The box authenticates with a client certificate (private.der/client.der) to the server. The cc3200 based boxed may use an outdated sha1 based algorithm that may leed to problems with modern OpenSSL versions.
+The communication is based on HTTPS (TLS over HTTP). The box authenticates with a client certificate (private.der/client.der) to the server. The cc3200 based boxed may use an outdated sha1 based algorithm that may lead to problems with modern OpenSSL versions.
 
 ### Request
 Every request contains a user-agent header with information about the current running firmware and the box' hardware.
@@ -17,7 +17,6 @@ There may be additional headers such as a content-length or authoritation if nee
     GET https://prod.de.tbs.toys/%path% HTTP/1.1
     Host: prod.de.tbs.toys
     User-Agent: TB/%firmware-ts% SP/%sp% HW/%hw%
-
 ##### cc3235
     GET https://prod.de.tbs.toys/%path% HTTP/1.1
     Host: prod.de.tbs.toys
@@ -54,7 +53,6 @@ Receive the time. May be needed for the TLS-certificates.
 | Content-Type | | text/plain; charset=utf-8 |
 #### Response
     1675100403
-
 ### v1-log (POST /v1/log) 
 Unknown purpose
 
@@ -79,7 +77,6 @@ Responses with HTTP 304 Not Modified if file is already up to date otherwise wit
 |---|---|---|
 | file-id | one-digit number (2-6)| 3 |
 | file-ts | unix-timestamp of the  | 1640950635 |
-
 #### Files
 | File ID | Name | Description |
 |---|---|---|
@@ -96,7 +93,6 @@ Sends all Audio-IDs and UIDs of the content on box to the cloud in protobof. The
 | Header | Description | Example |
 |---|---|---|
 | Content-Length | integer | 400 |
-
 #### Request-Protobuf
     message TonieFreshnessCheckRequest {
     repeated TonieFCInfo tonie_infos = 1;
@@ -106,13 +102,11 @@ Sends all Audio-IDs and UIDs of the content on box to the cloud in protobof. The
     required fixed64 uid = 1;
     required fixed32 audio_id = 2;
     }
-
 #### Response-Headers
 | Header | Description | Example |
 |---|---|---|
 | Content-Length | integer | 23 |
 | Content-Type | | application/octet-stream; charset=utf-8 |
-
 #### Response-Protobuf
     message TonieFreshnessCheckResponse {
     repeated fixed64 tonie_marked = 1;
@@ -137,7 +131,6 @@ Gets the content by uid and a password. If the content is know it sent back via 
 | Header | Description | Example |
 |---|---|---|
 | Authorization | Contains the "password" for the content to download | BD: %content-pass% |
-
 #### Response-Headers
 | Header | Description | Example |
 |---|---|---|
@@ -154,8 +147,7 @@ Gets the content by uid and a password. If the content is know it sent back via 
 #### Request-Headers
 | Header | Description | Example |
 |---|---|---|
-| Authorization | Contains the "password" for the content to download | BD: %content-pass% |
-
+| Authorization | Contains the "password" for the content | BD: %content-pass% |
 #### Response-Headers
 | Header | Description | Example |
 |---|---|---|
