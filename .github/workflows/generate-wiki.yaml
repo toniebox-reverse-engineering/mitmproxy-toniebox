@@ -3,7 +3,7 @@ name: Generate wiki from code
 on:
   push:
     branches: 
-      - master
+      - masterX
 
 jobs:
   build:
