@@ -41,6 +41,7 @@ if [ ! -f "$MITMPROXY_CERT_PATH/mitmproxy-ca.pem" ]; then
   done
   sleep 10s
   kill $!
+  sleep 5s
   echo "...created!"
 fi
 
