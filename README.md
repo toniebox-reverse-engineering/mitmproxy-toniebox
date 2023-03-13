@@ -2,7 +2,8 @@
 You may create a vm / lxc with docker.
 
 ## Image preperation
-Just "docker build ." your image and put the hash into "<IMAGE-ID>" of the docker-compose.yaml. Don't forget to enter your ips!
+Just "docker build . --tag hbs:latest" your image. Don't forget to enter your ips!
+Also build the nginx image if needed: "docker build ./docker/nginx/ --tag hbs-nginx:latest"
 
 ## Variants
 Select the variant you want to use. You may remove the variant from the docker-compose.yaml you don't need.
@@ -19,7 +20,7 @@ With this variant you can inspect the RTNL log messages.
 
 -CA as PEM into config volume named toniebox.ca.pem. (generated from ca.der)
 
--Convert the mitmproxy-ca-cert.pem in certs volume into ca.der and flash to your toniebox
+-Convert the mitmproxy-ca-cert.pem in certs volume into ca.der (or c2.der if using the altCA patch) and flash to your toniebox.
 
 [Additional information about the certificates and CA.](https://github.com/toniebox-reverse-engineering/toniebox/wiki/Traffic-Sniffing/e5ce1f10e3dc63376ca03df153bd0c8e485e0ad8)
 
@@ -28,8 +29,6 @@ Start the app via "docker-compose -f docker-compose.yaml up"
 You can access the logs via "docker logs --follow hackiebox-<variant-name>"
 Check the containers NET_IF IP with the port :8081 to check and inspect the communication
 You may ssh into the container via ssh root@<ip> -p 8022
-
-Please recreate the CA-cert manually with the starting date 2015-11-04 and copy it over into the mitmproxy configuration folder.
 
 ## HackieboxNG bootloader patches
 You may use the altCa/altUrl patches in slot add2/add3 to allow the certificate to be loaded from flash:/cert/c2.der and set the URL to prod.revvox / rtnl.revvox.
