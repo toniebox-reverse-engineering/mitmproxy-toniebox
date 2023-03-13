@@ -5,9 +5,6 @@ set -o pipefail
 set -o nounset
 # set -o xtrace
 
-# Run the ip addr command
-#ip addr
-
 # Start the ssh daemon
 echo "root:$ROOT_PASS"|chpasswd
 #TODO: Regenerate ssh_host_keys, may already in the docker image
@@ -29,16 +26,23 @@ fi
 source /opt/venv/mitmproxy/bin/activate
 mitmproxy --version
 
-echo "$@"
-# Run the mitmproxy command
-if [[ "$1" = "mitmdump" || "$1" = "mitmproxy" || "$1" = "mitmweb" ]]; then
-  if [ -f "$MITMPROXY_CERT_PATH/mitmproxy-ca.pem" ]; then
-    usermod -o \
-        -u $(stat -c "%u" "$MITMPROXY_CERT_PATH/mitmproxy-ca.pem") \
-        -g $(stat -c "%g" "$MITMPROXY_CERT_PATH/mitmproxy-ca.pem") \
-        mitmproxy
-  fi
-  gosu mitmproxy "$@"
-else
-  exec "$@"
+if [ ! -f "$MITMPROXY_CERT_PATH/mitmproxy-ca.pem" ]; then
+  echo "Creating certs..."
+  faketime '2015-11-04 00:00:00' mitmweb &
+  while [ ! -f "$MITMPROXY_CERT_PATH/mitmproxy-ca-cert.cer" ] \
+    || [ ! -f "$MITMPROXY_CERT_PATH/mitmproxy-ca-cert.p12" ] \
+    || [ ! -f "$MITMPROXY_CERT_PATH/mitmproxy-ca-cert.pem" ] \
+    || [ ! -f "$MITMPROXY_CERT_PATH/mitmproxy-ca.p12" ] \
+    || [ ! -f "$MITMPROXY_CERT_PATH/mitmproxy-ca.pem" ] \
+    || [ ! -f "$MITMPROXY_CERT_PATH/mitmproxy-dhparam.pem" ]
+  do
+    sleep 1s
+    echo "waiting..."
+  done
+  sleep 10s
+  kill $!
+  echo "...created!"
 fi
+
+echo "$@"
+exec "$@"
