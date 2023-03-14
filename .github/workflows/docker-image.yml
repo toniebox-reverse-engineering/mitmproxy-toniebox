@@ -17,10 +17,8 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build the HBS Docker amd64 image
       run: docker buildx build --platform linux/amd64 . --tag revvox/hackiebox-server-amd64:$(date +%s) --tag revvox/hackiebox-server-amd64:latest
-      continue-on-error: true
     - name: Build the nginx Docker amd64 image
       run: docker buildx build --platform linux/amd64 ./docker/nginx/ --tag revvox/hackiebox-nginx-server-amd64:$(date +%s) --tag revvox/hackiebox-nginx-server-amd64:latest
-      continue-on-error: true
   build-arm64:
     runs-on: ubuntu-latest
     steps:
