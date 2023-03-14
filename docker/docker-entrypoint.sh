@@ -44,6 +44,10 @@ if [ ! -f "$MITMPROXY_CERT_PATH/mitmproxy-ca.pem" ]; then
   sleep 5s
   echo "...created!"
 fi
+if [ ! -f "$MITMPROXY_CERT_PATH/ca.der" ]; then
+  echo "Convert mitmproxy-ca-cert.pem to ca.der for the Toniebox"
+  openssl x509 -inform PEM -outform DER -in $MITMPROXY_CERT_PATH/mitmproxy-ca-cert.cer -out $MITMPROXY_CERT_PATH/ca.der
+fi
 
 if [ -v SSLKEYLOGFILE ]; then
   echo "SSLKEYLOGFILE=$SSLKEYLOGFILE"
