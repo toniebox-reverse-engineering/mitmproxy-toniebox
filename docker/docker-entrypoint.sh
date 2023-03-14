@@ -45,5 +45,6 @@ if [ ! -f "$MITMPROXY_CERT_PATH/mitmproxy-ca.pem" ]; then
   echo "...created!"
 fi
 
+echo "SSLKEYLOGFILE=$SSLKEYLOGFILE"
 echo "$@"
-exec "$@"
+exec env SSLKEYLOGFILE=$SSLKEYLOGFILE "$@"
