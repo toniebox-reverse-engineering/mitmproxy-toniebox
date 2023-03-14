@@ -3,7 +3,7 @@ services:
   hackiebox-transparent:
     container_name: hackiebox-transparent
     hostname: hackiebox-transparent
-    image: <IMAGE-ID>
+    image: hbs:latest
     environment:
       #- SSLKEYLOGFILE=/root/sslkeylogfile.txt
       - MITMPROXY_MODE=transparent
@@ -17,12 +17,12 @@ services:
       - 8022:8022
       - 8080:8080
       - 8081:8081
-    command: mitmweb -s /home/mitmproxy/addons/TonieboxAddonStart.py
+    command: mitmweb -s /root/addons/TonieboxAddonStart.py
     volumes:
-      - certs:/home/mitmproxy/.mitmproxy
-      - content:/home/mitmproxy/CONTENT
-      - client-certs:/home/mitmproxy/client-certs
-      - config:/home/mitmproxy/config
+      - certs:/root/.mitmproxy
+      - content:/root/CONTENT
+      - client-certs:/root/client-certs
+      - config:/root/config
       - ssh:/etc/ssh
     networks:
       lan: 
@@ -33,12 +33,11 @@ services:
   hackiebox-reverse:
     container_name: hackiebox-reverse
     hostname: hackiebox-reverse
-    image: <IMAGE-ID>
+    image: hbs:latest
     dns:
       - 8.8.8.8
       - 1.1.1.1
     networks:
-      nginx-proxy-manager_default:
       lan: 
         ipv4_address: <IP-N-LAN>
     environment:
@@ -55,18 +54,18 @@ services:
       - 443:443
       - 444:444
       - 8081:8081
-    command: mitmweb -s /home/mitmproxy/addons/TonieboxAddonStart.py
+    command: mitmweb -s /root/addons/TonieboxAddonStart.py
     volumes:
-      - certs:/home/mitmproxy/.mitmproxy
-      - content:/home/mitmproxy/CONTENT
-      - client-certs:/home/mitmproxy/client-certs
-      - config:/home/mitmproxy/config
+      - certs:/root/.mitmproxy
+      - content:/root/CONTENT
+      - client-certs:/root/client-certs
+      - config:/root/config
       - ssh:/etc/ssh
     restart: unless-stopped
   hackiebox-reverse-nginx:
     container_name: hackiebox-reverse-nginx
     hostname: hackiebox-reverse-nginx
-    image: <IMAGE-ID-NGINX>
+    image: hbs-nginx:latest
     networks:
       lan: 
         ipv4_address: <IP-R-LAN>
