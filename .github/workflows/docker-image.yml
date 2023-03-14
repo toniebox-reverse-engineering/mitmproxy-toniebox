@@ -15,19 +15,24 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     steps:
     - uses: actions/checkout@v3
     - name: Build the HBS Docker amd64 image
       run: docker buildx build --platform linux/amd64 . --tag revvox/hackiebox-server-amd64:$(date +%s) --tag revvox/hackiebox-server-amd64:latest
+      continue-on-error: true
     - name: Build the HBS Docker arm64 image
       run: docker buildx build --platform linux/arm64 . --tag revvox/hackiebox-server-arm64:$(date +%s) --tag revvox/hackiebox-server-arm64:latest
+      continue-on-error: true
     - name: Build the HBS Docker armhf image
       run: docker buildx build --platform linux/armhf . --tag revvox/hackiebox-server-armhf:$(date +%s) --tag revvox/hackiebox-server-armhf:latest
+      continue-on-error: true
     - name: Build the nginx Docker amd64 image
       run: docker buildx build --platform linux/amd64 ./docker/nginx/ --tag revvox/hackiebox-nginx-server-amd64:$(date +%s) --tag revvox/hackiebox-nginx-server-amd64:latest
+      continue-on-error: true
     - name: Build the nginx Docker arm64 image
       run: docker buildx build --platform linux/arm64 ./docker/nginx/ --tag revvox/hackiebox-nginx-server-arm64:$(date +%s) --tag revvox/hackiebox-nginx-server-arm64:latest
+      continue-on-error: true
     - name: Build the nginx Docker armhf image
       run: docker buildx build --platform linux/armhf ./docker/nginx/ --tag revvox/hackiebox-nginx-server-armhf:$(date +%s) --tag revvox/hackiebox-nginx-server-armhf:latest
+      continue-on-error: true
