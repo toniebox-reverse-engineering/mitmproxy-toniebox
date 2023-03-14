@@ -151,6 +151,7 @@ class TonieboxContentReplace:
         return True
     
     def request_freshness_check(self, flow: http.HTTPFlow) -> None:              
+        flow.backup() #mark as modified            
         tonieInfos = TonieFreshnessCheckRequest()
         tonieInfos_mod = TonieFreshnessCheckRequest()
         tonieInfos.ParseFromString(flow.request.content)
@@ -200,6 +201,7 @@ class TonieboxContentReplace:
     
     
     def request_claim(self, flow: http.HTTPFlow) -> None:
+        flow.backup() #mark as modified            
         content_id = flow.request.path[10:]
         
         logging.warn(f"content_id={content_id}")
