@@ -18,7 +18,7 @@ class TonieboxContentReplace:
         headers["Connection"] = "keep-alive"
         del headers["Content-Length"]
         
-    def handle_content(self, flow: http.HTTPFlow, content_path) -> None:   
+    def handle_content(self, flow: http.HTTPFlow, content_path, uid: int) -> None:   
         flow.backup() #mark content as modified  
         if not content_path.is_file():
             logging.warn(f"... and no dump here to serve")
@@ -78,7 +78,7 @@ class TonieboxContentReplace:
                 return
         
         logging.warn(f"skipping cloud download")
-        self.handle_content(flow, content_path)
+        self.handle_content(flow, content_path, self.text2uid(content_id))
         
     def response_content(self, flow: http.HTTPFlow) -> None:
         if flow.modified(): #request got modified by us
@@ -125,12 +125,16 @@ class TonieboxContentReplace:
         #    Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
         #    open(content_nocloud_path, 'a').close()
             
-        #self.handle_content(flow, content_path)  
+        #self.handle_content(flow, content_path, self.text2uid(content_id))  
     
     def uid2bytes(self, uid:int)-> bytes: 
         return uid.to_bytes(8, 'big')
     def uid2text(self, uid:int)-> str: 
         return uid.to_bytes(8, 'big').hex(":").upper()
+    def text2uid(self, uid:str)-> int: 
+        uid_bytes = bytearray.fromhex(uid)
+        uid_bytes.reverse()
+        return int(uid_bytes.hex(":").replace(":", ""), 16)
     def uid2path(self, uid:int)-> list: 
         uid_bytes = uid.to_bytes(8, 'little')
         result = [
