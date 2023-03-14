@@ -6,9 +6,9 @@ on:
     tags:
       - hbs_nightly
       - hbs_v*
-#    branches: [ "master" ]
-#  pull_request:
-#    branches: [ "master" ]
+    branches: [ "master", "develop" ]
+  pull_request:
+    branches: [ "master", "develop" ]
 
 jobs:
 
@@ -18,5 +18,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag revvox/hackiebox-server:$(date +%s) --tag revvox/hackiebox-server:latest
+    - name: Build the HBS Docker amd64 image
+      run: docker buildx build --platform linux/amd64 . --tag revvox/hackiebox-server-amd64:$(date +%s) --tag revvox/hackiebox-server-amd64:latest
+    - name: Build the HBS Docker arm64 image
+      run: docker buildx build --platform linux/arm64 . --tag revvox/hackiebox-server-arm64:$(date +%s) --tag revvox/hackiebox-server-arm64:latest
+    - name: Build the nginx Docker amd64 image
+      run: docker buildx build --platform linux/amd64 ./docker/nginx/ --tag revvox/hackiebox-nginx-server-amd64:$(date +%s) --tag revvox/hackiebox-nginx-server-amd64:latest
+    - name: Build the nginx Docker arm64 image
+      run: docker buildx build --platform linux/arm64 ./docker/nginx/ --tag revvox/hackiebox-nginx-server-arm64:$(date +%s) --tag revvox/hackiebox-nginx-server-arm64:latest

@@ -18,7 +18,7 @@ class TonieboxContentReplace:
         headers["Connection"] = "keep-alive"
         del headers["Content-Length"]
         
-    def handle_content(self, flow: http.HTTPFlow, content_path) -> None:   
+    def handle_content(self, flow: http.HTTPFlow, content_path, uid: int) -> None:   
         flow.backup() #mark content as modified  
         if not content_path.is_file():
             logging.warn(f"... and no dump here to serve")
@@ -49,7 +49,7 @@ class TonieboxContentReplace:
         
         with open(content_path, "rb") as binary_file:
             response.content = binary_file.read()   
-        
+
         flow.response = response
         
     def request_content(self, flow: http.HTTPFlow) -> None:
@@ -78,7 +78,7 @@ class TonieboxContentReplace:
                 return
         
         logging.warn(f"skipping cloud download")
-        self.handle_content(flow, content_path)
+        self.handle_content(flow, content_path, self.text2uid(content_id))
         
     def response_content(self, flow: http.HTTPFlow) -> None:
         if flow.modified(): #request got modified by us
@@ -125,12 +125,16 @@ class TonieboxContentReplace:
         #    Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
         #    open(content_nocloud_path, 'a').close()
             
-        #self.handle_content(flow, content_path)  
+        #self.handle_content(flow, content_path, self.text2uid(content_id))  
     
     def uid2bytes(self, uid:int)-> bytes: 
         return uid.to_bytes(8, 'big')
     def uid2text(self, uid:int)-> str: 
         return uid.to_bytes(8, 'big').hex(":").upper()
+    def text2uid(self, uid:str)-> int: 
+        uid_bytes = bytearray.fromhex(uid)
+        uid_bytes.reverse()
+        return int(uid_bytes.hex(":").replace(":", ""), 16)
     def uid2path(self, uid:int)-> list: 
         uid_bytes = uid.to_bytes(8, 'little')
         result = [
@@ -146,7 +150,8 @@ class TonieboxContentReplace:
             return False
         return True
     
-    def request_freshness_check(self, flow: http.HTTPFlow) -> None:              
+    def request_freshness_check(self, flow: http.HTTPFlow) -> None:   
+        flow.backup() #mark as modified            
         tonieInfos = TonieFreshnessCheckRequest()
         tonieInfos_mod = TonieFreshnessCheckRequest()
         tonieInfos.ParseFromString(flow.request.content)
@@ -182,7 +187,7 @@ class TonieboxContentReplace:
             else:
                 tonieFCResponse_mod.tonie_marked.append(uid)
         
-        
+
         tonieFcResBytes = tonieFCResponse_mod.SerializeToString()
         flow.response.headers["Content-Length"] = str(len(tonieFcResBytes))
         flow.response.content = tonieFcResBytes
@@ -196,6 +201,7 @@ class TonieboxContentReplace:
     
     
     def request_claim(self, flow: http.HTTPFlow) -> None:
+        flow.backup() #mark as modified            
         content_id = flow.request.path[10:]
         
         logging.warn(f"content_id={content_id}")
@@ -226,9 +232,71 @@ class TonieboxContentReplace:
                 
         response.headers["Content-Length"] = "0"
         flow.response = response
+    def request_ota(self, flow: http.HTTPFlow) -> None:
+        return
+        if flow.request.path.startswith("/v1/ota/3?cv=1") \
+                and "RoseRed" in flow.request.headers["User-Agent"]: #esp32box
+            flow.backup()
+            ota_path = Path(config.config_dir, "1671023902-esp32-toniebox-eu-HEAD-ge2cc88b1be4d-dirty-app-patched.ota")
+            response = http.Response.make(
+                200,  # HTTP status code
+            )
+            self.add_headers(response.headers)
             
+            response.headers["Content-Length"] = str(ota_path.stat().st_size)
+            response.headers["Content-Type"] = "binary/octet-stream"
+            response.headers["content-disposition"] = "attachment;filename="+ota_path.name
+            
+            with open(ota_path, "rb") as binary_file:
+                response.content = binary_file.read()  
+            flow.response = response
+
+
+        #flow.backup() #mark as modified            
+        #Block OTA
+        # Set the response for the flow
+        #response = http.Response.make(
+        #    306,  # HTTP status code
+        #)
+        #self.add_headers(response.headers)
+
+        #response.headers["Content-Length"] = "0"
+        #flow.response = response
+    def response_ota(self, flow:http.HTTPFlow) -> None:
+        return
+        if flow.request.path.startswith("/v1/ota/3?cv=1") \
+                and "RoseRed" in flow.request.headers["User-Agent"]: #esp32box
+            ota_path = Path(config.config_dir, "1671023902-esp32-toniebox-eu-HEAD-ge2cc88b1be4d-dirty-app-patched.ota")
+            flow.response.headers["Content-Length"] = str(ota_path.stat().st_size)
+            flow.response.headers["content-disposition"] = "attachment;filename="+ota_path.name
+            with open(ota_path, "rb") as binary_file:
+                flow.response.content = binary_file.read()  
+
+
+    def request_log(self, flow: http.HTTPFlow) -> None:
+        #flow.backup() #mark as modified            
+        #Block Log
+        # Set the response for the flow
+        response = http.Response.make(
+            204,  # No Content
+        )
+        self.add_headers(response.headers)
+        #flow.response = response
+
+    def request_time(self, flow: http.HTTPFlow) -> None:
+        #flow.backup() #mark as modified            
+        #Block Log
+        # Set the response for the flow
+        response = http.Response.make(
+            200,  # No Content
+        )
+        self.add_headers(response.headers)
+        response.headers["Content-Type"] = "text/plain; charset=utf-8"
+        response.content = "1670685128".encode("UTF-8") #Sat Dec 10 2022 16:12:08 GMT+0100
+        #flow.response = response
+
     def request(self, flow: http.HTTPFlow) -> None:
-        logging.warn(f"host={flow.request.host}, pretty_host={flow.request.pretty_host}")
+        logging.warn(f"host={flow.request.host}, pretty_host={flow.request.pretty_host}, path={flow.request.path}")
 
         if flow.request.path.startswith("/v1/content/") or flow.request.path.startswith("/v2/content/"):
             self.request_content(flow)
@@ -236,6 +304,12 @@ class TonieboxContentReplace:
             self.request_claim(flow)
         elif flow.request.path.startswith("/v1/freshness-check"):
             self.request_freshness_check(flow)
+        elif flow.request.path.startswith("/v1/ota"):
+            self.request_ota(flow)
+        elif flow.request.path.startswith("/v1/log"):
+            self.request_log(flow)
+        elif flow.request.path.startswith("/v1/time"):
+            self.request_time(flow)
     
     def response(self, flow: http.HTTPFlow) -> None:
         if not flow.response or not flow.response.content:
@@ -245,6 +319,8 @@ class TonieboxContentReplace:
             self.response_content(flow)
         elif flow.request.path.startswith("/v1/freshness-check"):
             self.response_freshness_check(flow)
+        elif flow.request.path.startswith("/v1/ota"):
+            self.response_ota(flow)
 
     def tcp_message(self, flow: tcp.TCPFlow):
         #logging.warn(f"sni={flow.client_conn.sni}, peername={flow.client_conn.peername}, sockname={flow.client_conn.sockname}")
