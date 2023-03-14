@@ -47,7 +47,6 @@ fi
 
 if [ -v SSLKEYLOGFILE ]; then
   echo "SSLKEYLOGFILE=$SSLKEYLOGFILE"
-  exec env SSLKEYLOGFILE=$SSLKEYLOGFILE "$@"
+  exec env SSLKEYLOGFILE=$SSLKEYLOGFILE mitmweb "-s /root/addons/TonieboxAddonStart.py"
 fi
-echo "$@"
-exec "$@"
+exec mitmweb "-s /root/addons/TonieboxAddonStart.py"
