@@ -19,7 +19,6 @@ RUN sed -ri 's/"cryptography([>=]{1,2}[0-9\.,]+[<=]{1,2}[0-9\.]+)"/#Install manu
 
 RUN --mount=type=tmpfs,target=/root/.cargo python -m venv /opt/venv/mitmproxy \
     && /opt/venv/mitmproxy/bin/pip install arpreq scapy dnspython \
-    #&& mkdir -p ~/.cargo && chmod 777 ~/.cargo && /opt/venv/mitmproxy/bin/pip install cryptography==38.0.4 --no-binary cryptography \
     && mkdir -p ~/.cargo && chmod 777 ~/.cargo && /opt/venv/mitmproxy/bin/pip install cryptography==38.0.4 cryptography \
     && /opt/venv/mitmproxy/bin/pip install -e "/opt/mitmproxy/.[dev]"
 
