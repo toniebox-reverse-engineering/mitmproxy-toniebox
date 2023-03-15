@@ -205,7 +205,7 @@ class TonieboxCertStoreAlt(CertStore):
             x509.SubjectAlternativeName(ss), critical=not is_valid_commonname
         )
         cert = builder.sign(private_key=privkey, algorithm=hashes.SHA256())  # type: ignore
-        with open(f"/home/mitmproxy/config/{commonname}-cert.{config.mode}.{config.mitmproxy_version}.crt", "wb") as f:
+        with open(f"{config.config_dir}/{commonname}-cert.{config.mode}.{config.mitmproxy_version}.crt", "wb") as f:
             f.write(cert.public_bytes(serialization.Encoding.PEM))
 
         return Cert(cert)

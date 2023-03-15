@@ -76,8 +76,4 @@ COPY docker/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +rx /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-CMD ["mitmweb -s /root/addons/TonieboxAddonStart.py"]
-#CMD ["mitmweb", "-s /root/addons/TonieboxAddonStart.py"]
-
-
 COPY addons/ /root/addons/
