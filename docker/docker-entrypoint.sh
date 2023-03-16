@@ -5,6 +5,9 @@ set -o pipefail
 set -o nounset
 # set -o xtrace
 
+# start nginx
+nginx
+
 # Start the ssh daemon
 echo "root:$ROOT_PASS"|chpasswd
 #TODO: Regenerate ssh_host_keys, may already in the docker image

@@ -36,9 +36,12 @@ class TonieboxConfig:
         self.url_real_rtnl = "rtnl.bxcl.de"
         self.url_fake_prod = env_url_prod
         self.url_fake_rtnl = env_url_rtnl
+        self.fake_port_prod = 543 #from nginx' sites-enabled
+        self.fake_port_rtnl = 643
 
         if env_mode == "reverse":
-            ctx.options.mode = [f"reverse:https://{self.url_real_prod}:443@:443", f"reverse:tls://{self.url_real_rtnl}:443@:444"]
+            #ctx.options.mode = [f"reverse:https://{self.url_real_prod}:443@:443", f"reverse:tls://{self.url_real_rtnl}:443@:444"]
+            ctx.options.mode = [f"reverse:https://{self.url_real_prod}@:{self.fake_port_prod}", f"reverse:tls://{self.url_real_rtnl}@:{self.fake_port_rtnl}"]
 
             self.mode = env_mode
             #ctx.options.allow_hosts = [f"{self.url_fake_prod}"]

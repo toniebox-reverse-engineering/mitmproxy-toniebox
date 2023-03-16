@@ -6,8 +6,9 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc libpq-dev python3-dev python3-wheel \
     && apt-get install -y --no-install-recommends git \
     && apt-get install -y --no-install-recommends build-essential libssl-dev libffi-dev python3-dev cargo pkg-config\
-    && apt-get install -y --no-install-recommends rustc \
+    && apt-get install -y --no-install-recommends rustc\
     && rm -rf /var/lib/apt/lists/*
+
 
 RUN git clone --depth 1 --branch $MITMPROXY_BRANCH https://github.com/mitmproxy/mitmproxy.git /opt/mitmproxy
 #Downgrade OpenSSL so it supports SHA-1 for v1/v2 boxes
@@ -54,7 +55,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends tcpdump openssh-server \
     && apt-get install -y --no-install-recommends iptables iproute2 \
     && apt-get install -y --no-install-recommends arping \
-    && apt-get install -y --no-install-recommends faketime \
+    && apt-get install -y --no-install-recommends faketime nginx\
     && rm -rf /var/lib/apt/lists/*
 
 # Fix OpenSSL to support SHA-1
@@ -75,6 +76,7 @@ VOLUME [ \
     "/etc/ssh" \
 ]
 
+ADD nginx/sites-enabled /etc/nginx/sites-enabled
 COPY docker/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +rx /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

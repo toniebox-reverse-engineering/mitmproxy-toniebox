@@ -1,0 +1,12 @@
+server {
+		listen 443 http2;
+    server_name rtnl.revvox;
+		access_log logs/access_rtnl_revvox.log main;
+
+    location / {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+				grpc_pass grpcs://localhost:643:;
+    }
+}

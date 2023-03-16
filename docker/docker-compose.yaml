@@ -1,34 +1,34 @@
 version: '3'
 services:
-  hackiebox-transparent:
-    container_name: hackiebox-transparent
-    hostname: hackiebox-transparent
-    image: hbs:latest
-    environment:
-      #- SSLKEYLOGFILE=/root/sslkeylogfile.txt
-      - MITMPROXY_MODE=transparent
-      #- NET_IF=eth1
-      - ROOT_PASS=root #For SSH access (and tcpdump)
-      #- TONIEBOX_FIXED_CERT=toniebox-v1.pem
-      #- TONIEBOX_FALLBACK_CERT=toniebox-v1.pem
-    tty: true
-    privileged: true
-    ports:
-      - 8022:8022
-      - 8080:8080
-      - 8081:8081
-    volumes:
-      - certs:/root/.mitmproxy
-      - content:/root/CONTENT
-      - client-certs:/root/client-certs
-      - config:/root/config
-      - ssh:/etc/ssh
-    networks:
-      lan: 
-        ipv4_address: <IP-T-LAN>
-      mitm: 
-        ipv4_address: <IP-T-MITM>
-    restart: unless-stopped
+  #  hackiebox-transparent:
+  #    container_name: hackiebox-transparent
+  #    hostname: hackiebox-transparent
+  #    image: hbs:latest
+  #    environment:
+  #      #- SSLKEYLOGFILE=/root/sslkeylogfile.txt
+  #      - MITMPROXY_MODE=transparent
+  #      #- NET_IF=eth1
+  #      - ROOT_PASS=root #For SSH access (and tcpdump)
+  #      #- TONIEBOX_FIXED_CERT=toniebox-v1.pem
+  #      #- TONIEBOX_FALLBACK_CERT=toniebox-v1.pem
+  #    tty: true
+  #    privileged: true
+  #    ports:
+  #      - 8022:8022
+  #      - 8080:8080
+  #      - 8081:8081
+  #    volumes:
+  #      - certs:/root/.mitmproxy
+  #      - content:/root/CONTENT
+  #      - client-certs:/root/client-certs
+  #      - config:/root/config
+  #      - ssh:/etc/ssh
+  #    networks:
+  #      lan: 
+  #        ipv4_address: <IP-T-LAN>
+  #      mitm: 
+  #        ipv4_address: <IP-T-MITM>
+  #    restart: unless-stopped
   hackiebox-reverse:
     container_name: hackiebox-reverse
     hostname: hackiebox-reverse
@@ -36,9 +36,6 @@ services:
     dns:
       - 8.8.8.8
       - 1.1.1.1
-    networks:
-      lan: 
-        ipv4_address: <IP-N-LAN>
     environment:
       #- SSLKEYLOGFILE=/root/sslkeylogfile.txt
       - MITMPROXY_MODE=reverse 
@@ -49,10 +46,10 @@ services:
       #- TONIEBOX_FALLBACK_CERT=toniebox-v3.pem
     tty: true
     ports:
-      - 8022:8022
+      #      - 8022:8022
       - 443:443
-      - 444:444
-      - 8081:8081
+        #- 444:444
+        #- 8081:8081
     volumes:
       - certs:/root/.mitmproxy
       - content:/root/CONTENT
@@ -60,18 +57,18 @@ services:
       - config:/root/config
       - ssh:/etc/ssh
     restart: unless-stopped
-  hackiebox-reverse-nginx:
-    container_name: hackiebox-reverse-nginx
-    hostname: hackiebox-reverse-nginx
-    image: hbs-nginx:latest
-    networks:
-      lan: 
-        ipv4_address: <IP-R-LAN>
-    environment:
-      - RTNL_UPSTREAM=hackiebox-reverse #CANNOT BE CHANGED, DOESN'T WORK!!!
-    ports:
-      - 443:443
-    restart: unless-stopped
+      # hackiebox-reverse-nginx:
+      #   container_name: hackiebox-reverse-nginx
+      #   hostname: hackiebox-reverse-nginx
+      #   image: hbs-nginx:latest
+      #   networks:
+      #     lan: 
+      #       ipv4_address: <IP-R-LAN>
+      #   environment:
+      #     - RTNL_UPSTREAM=hackiebox-reverse #CANNOT BE CHANGED, DOESN'T WORK!!!
+      #   ports:
+      #     - 443:443
+      #   restart: unless-stopped
 volumes:
   certs:
   content:
@@ -79,8 +76,8 @@ volumes:
   client-certs:
   ssh:
   addons:
-networks:
-  lan:
-    external: true
-  mitm:
-    external: true
+    #networks:
+    #  lan:
+    #    external: true
+    #  mitm:
+    #    external: true
