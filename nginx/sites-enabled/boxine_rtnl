@@ -1,5 +1,6 @@
 server {
-		listen 443 http2;
+		#listen 443 http2;
+		listen 443;
     server_name rtnl.bxcl.de;
 		access_log logs/access/rtnl_boxine_de.log;
     error_log logs/error/rtnl_bxcl_de.log;

@@ -1,5 +1,6 @@
 server {
-		listen 443 http2;
+		#listen 443 http2;
+		listen 443;
     server_name rtnl.revvox;
 		access_log logs/access/rntl_revvox.log;
     error_log logs/error/rtnl_revvox.log;

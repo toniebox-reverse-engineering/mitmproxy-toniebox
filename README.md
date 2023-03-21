@@ -17,14 +17,14 @@ With this variant you can inspect the RTNL log messages.
 
 ## Certificates
 ### mitmproxy-ca-cert.pem conversion
-mitmproxy-ca-cert.pem in certs volume is converted to ca.der automatically. Flash it to your toniebox flash:/cert/ca.der (or flash it as flash:/cert/c2.der if using the altCA patch). 
+mitmproxy-ca-cert.pem in `certs` volume is converted to ca.der automatically. Flash it to your toniebox flash:/cert/ca.der (or flash it as flash:/cert/c2.der if using the altCA patch). 
 This is done via:
 ```
 openssl x509 -inform PEM -outform DER -in mitmproxy-ca-cert.cer -out ca.der
 ```
 
 ### Convert **client certificate** to **PEM**-format
-client-certificates as PEM into client-certs volume. (generated from client.der/private.der) They will be selected by their CN which is their MAC.
+client-certificates as PEM into `client-certs` volume. (generated from client.der/private.der) They will be selected by their CN which is their MAC.
 ```
 openssl x509 -inform DER -outform PEM -in client.der -out client.cer
 openssl rsa -inform DER -outform PEM -in private.der -out private.key
@@ -32,7 +32,7 @@ cat client.cer private.key > client.pem
 ```
 
 ### Original CA as PEM
-Original CA as PEM into config volume named toniebox.ca.pem. (generated from  the original(!) ca.der)
+Original CA as PEM into `config` volume named toniebox.ca.pem. (generated from  the original(!) ca.der)
 ```
 openssl x509 -inform DER -outform PEM -in ca.der -out toniebox.ca.pem
 ```
