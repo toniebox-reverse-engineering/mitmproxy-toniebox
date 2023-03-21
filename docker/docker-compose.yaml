@@ -34,8 +34,9 @@ services:
     hostname: hackiebox-reverse
     image: hbs:latest
     dns:
-      - 8.8.8.8
       - 1.1.1.1
+      - 8.8.8.8
+      #- 127.0.0.1
     environment:
       #- SSLKEYLOGFILE=/root/sslkeylogfile.txt
       - MITMPROXY_MODE=reverse 
@@ -49,13 +50,14 @@ services:
       #      - 8022:8022
       - 443:443
         #- 444:444
-        #- 8081:8081
+      - 8081:8081
+        #      - 543:543
     volumes:
-      - certs:/root/.mitmproxy
-      - content:/root/CONTENT
-      - client-certs:/root/client-certs
-      - config:/root/config
-      - ssh:/etc/ssh
+      - ./certs/ca:/root/.mitmproxy
+      - ./content:/root/CONTENT
+      - ./client-certs:/root/client-certs
+      - ./config:/root/config
+      - ./ssh:/etc/ssh
     restart: unless-stopped
       # hackiebox-reverse-nginx:
       #   container_name: hackiebox-reverse-nginx
@@ -69,13 +71,13 @@ services:
       #   ports:
       #     - 443:443
       #   restart: unless-stopped
-volumes:
-  certs:
-  content:
-  config:
-  client-certs:
-  ssh:
-  addons:
+      #volumes:
+      #  certs:
+      #  content:
+      #  config:
+      #  client-certs:
+      #  ssh:
+      #  addons:
     #networks:
     #  lan:
     #    external: true
