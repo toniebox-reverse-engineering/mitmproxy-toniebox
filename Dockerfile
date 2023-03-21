@@ -15,16 +15,16 @@ RUN git clone --depth 1 --branch $MITMPROXY_BRANCH https://github.com/mitmproxy/
 RUN sed -ri 's/"cryptography([>=]{1,2}[0-9\.,]+[<=]{1,2}[0-9\.]+)"/#Install manually/' /opt/mitmproxy/setup.py
 
 RUN if [ `dpkg --print-architecture` = "armhf" ]; then \
-        printf "[global]\nextra-index-url=https://www.piwheels.org/simple\n" > /etc/pip.conf ; \
-        --mount=type=tmpfs,target=/root/.cargo python -m venv /opt/venv/mitmproxy \
-            && /opt/venv/mitmproxy/bin/pip install arpreq scapy dnspython \
-            && mkdir -p ~/.cargo && chmod 777 ~/.cargo && /opt/venv/mitmproxy/bin/pip install cryptography==38.0.4 cryptography \
-            && /opt/venv/mitmproxy/bin/pip install -e "/opt/mitmproxy/.[dev]"; \
+    printf "[global]\nextra-index-url=https://www.piwheels.org/simple\n" > /etc/pip.conf ; \
+    --mount=type=tmpfs,target=/root/.cargo python -m venv /opt/venv/mitmproxy \
+    && /opt/venv/mitmproxy/bin/pip install arpreq scapy dnspython \
+    && mkdir -p ~/.cargo && chmod 777 ~/.cargo && /opt/venv/mitmproxy/bin/pip install cryptography==38.0.4 cryptography \
+    && /opt/venv/mitmproxy/bin/pip install -e "/opt/mitmproxy/.[dev]"; \
     else \
-        python -m venv /opt/venv/mitmproxy \
-            && /opt/venv/mitmproxy/bin/pip install arpreq scapy dnspython \
-            && /opt/venv/mitmproxy/bin/pip install cryptography==38.0.4 --no-binary cryptography \
-            && /opt/venv/mitmproxy/bin/pip install -e "/opt/mitmproxy/.[dev]"; \
+    python -m venv /opt/venv/mitmproxy \
+    && /opt/venv/mitmproxy/bin/pip install arpreq scapy dnspython \
+    && /opt/venv/mitmproxy/bin/pip install cryptography==38.0.4 --no-binary cryptography \
+    && /opt/venv/mitmproxy/bin/pip install -e "/opt/mitmproxy/.[dev]"; \
     fi 
 
 FROM python:3.9-slim-bullseye
@@ -56,11 +56,12 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends iptables iproute2 \
     && apt-get install -y --no-install-recommends arping \
     && apt-get install -y --no-install-recommends faketime nginx\
+    && apt-get install -y  net-tools vim #TODO: remove before merge!\
     && rm -rf /var/lib/apt/lists/*
 
 # Fix OpenSSL to support SHA-1
 RUN sed -ri 's/CipherString = DEFAULT@SECLEVEL=[0-9]/CipherString = DEFAULT@SECLEVEL=1/' /etc/ssl/openssl.cnf \
-#    && sed -ri 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1.0/' /etc/ssl/openssl.cnf \
+    #    && sed -ri 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1.0/' /etc/ssl/openssl.cnf \
     && sed -i '1iopenssl_conf = default_conf' /etc/ssl/openssl.cnf
 
 # Prepare SSH
@@ -74,9 +75,13 @@ VOLUME [ \
     "/root/client-certs", \
     "/root/config", \
     "/etc/ssh" \
-]
+    ]
 
 ADD nginx/sites-enabled /etc/nginx/sites-enabled
+RUN bash -c 'mkdir -p /usr/share/nginx/logs/{access,error}'
+RUN echo 'alias nginxdomainlogs="cd /usr/share/nginx"' >> ~/.bashrc \
+    && echo 'alias nginxserverlogs="cd /var/log/nginx/"' >> ~/.bashrc \
+    && echo 'alias ll="ls -lart"' >> ~/.bashrc 
 COPY docker/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +rx /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
