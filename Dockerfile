@@ -82,6 +82,7 @@ RUN bash -c 'mkdir -p /usr/share/nginx/logs/{access,error}'
 RUN echo 'alias nginxdomainlogs="cd /usr/share/nginx"' >> ~/.bashrc \
     && echo 'alias nginxserverlogs="cd /var/log/nginx/"' >> ~/.bashrc \
     && echo 'alias ll="ls -lart"' >> ~/.bashrc 
+
 COPY docker/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +rx /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

@@ -5,9 +5,6 @@ set -o pipefail
 set -o nounset
 # set -o xtrace
 
-# start nginx
-nginx
-
 # Start the ssh daemon
 echo "root:$ROOT_PASS"|chpasswd
 #TODO: Regenerate ssh_host_keys, may already in the docker image
@@ -57,4 +54,30 @@ if [ -v SSLKEYLOGFILE ]; then
   echo "SSLKEYLOGFILE=$SSLKEYLOGFILE"
   exec env SSLKEYLOGFILE=$SSLKEYLOGFILE mitmweb "-s /root/addons/TonieboxAddonStart.py"
 fi
+
+NGINX_CERT_FOLDER="/etc/ssl"
+#https://gist.github.com/vgmoose/125271f1d9e4a1269454a64095b9e4a1
+if [ ! -f "$NGINX_CERT_FOLDER/nginx-selfsigned.crt" ]; then
+  echo "Creating nginx self signed certificate in $NGINX_CERT_FOLDER"
+  #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=prod.de.tbs.toys" -keyout $NGINX_CERT_FOLDER/nginx-selfsigned.key -out $NGINX_CERT_FOLDER/nginx-selfsigned.crt
+  openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=prod.de.tbs.toys" -keyout mycert.key -out mycert.crt 
+  #sign cert
+  mkdir -p demoCA/newcerts
+  touch demoCA/index.txt
+  echo '01' > demoCA/serial
+  openssl pkey -in $MITMPROXY_CERT_PATH/mitmproxy-ca.pem -out mitmproxy-ca.key #get CA private key
+  echo "Signing Certificate with ca root"
+  openssl ca -policy policy_anything -batch -days 7300 -keyfile mitmproxy-ca.key -cert $MITMPROXY_CERT_PATH/mitmproxy-ca-cert.pem -ss_cert mycert.crt -out mycert.signed.pem -extensions v3_req 
+  cat $MITMPROXY_CERT_PATH/mitmproxy-ca-cert.pem mycert.signed.pem> certchain.pem #merge root ca with signed certificate
+  echo "------------"
+  cat certchain.pem
+  echo "------------"
+  mv certchain.pem mitmproxy-ca.key $NGINX_CERT_FOLDER
+  #cleanup
+  rm mycert.key mycert.crt
+  rm -rf demoCA
+fi
+echo "Starting nginx"
+nginx
+
 exec mitmweb "-s /root/addons/TonieboxAddonStart.py"

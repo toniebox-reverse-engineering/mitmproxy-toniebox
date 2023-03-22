@@ -1,6 +1,8 @@
 server {
-    listen 443;
+    listen 443 ssl;
     server_name prod.revvox;
+    ssl_certificate     /etc/ssl/certchain.pem;
+    ssl_certificate_key /etc/ssl/mitmproxy-ca.key;
 		access_log logs/access/prod_revvox.log;
     error_log logs/error/prod_revvox.log debug;
 
