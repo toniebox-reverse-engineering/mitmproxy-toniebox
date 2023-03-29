@@ -11,13 +11,11 @@ Select the variant you want to use. You may remove the variant from the docker-c
 ### Reverse Proxy
 You'll need one network. Please reconfigure your DNS so prod.de.tbs.toys points to the ip of your reverse container. Please set rtnl.bxcl.de to the ip of the nginx container.  
 
-### Transparent Proxy
-You'll need two networks. One is a normal LAN, the other (mitm) should have a DHCP that reconfigures the gateway-ip to the ip of the container itself. You may need to set the NET_IF variable to the mitm interface.
 With this variant you can inspect the RTNL log messages.
 
 ## Certificates
 ### mitmproxy-ca-cert.pem conversion
-mitmproxy-ca-cert.pem in `certs` volume is converted to ca.der automatically. Flash it to your toniebox flash:/cert/ca.der (or flash it as flash:/cert/c2.der if using the altCA patch). 
+mitmproxy-ca-cert.pem in `certs`/ca/ volume is converted to ca.der automatically. Flash it to your toniebox flash:/cert/ca.der (or flash it as flash:/cert/c2.der if using the altCA patch). 
 This is done via:
 ```
 openssl x509 -inform PEM -outform DER -in mitmproxy-ca-cert.cer -out ca.der
