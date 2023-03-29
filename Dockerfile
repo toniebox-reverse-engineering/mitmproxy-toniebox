@@ -78,6 +78,7 @@ VOLUME [ \
     ]
 
 ADD nginx/sites-enabled /etc/nginx/sites-enabled
+ADD certs/* /certs/
 RUN bash -c 'mkdir -p /usr/share/nginx/logs/{access,error}'
 RUN echo 'alias nginxdomainlogs="cd /usr/share/nginx"' >> ~/.bashrc \
     && echo 'alias nginxserverlogs="cd /var/log/nginx/"' >> ~/.bashrc \

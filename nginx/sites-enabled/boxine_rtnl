@@ -2,6 +2,8 @@ server {
 		#listen 443 http2;
 		listen 443;
     server_name rtnl.bxcl.de;
+    ssl_certificate     /etc/ssl/mitmproxy-ca-signed.pem;
+    ssl_certificate_key /etc/ssl/mitmproxy-ca-signed.key;
 		access_log logs/access/rtnl_boxine_de.log;
     error_log logs/error/rtnl_bxcl_de.log;
 

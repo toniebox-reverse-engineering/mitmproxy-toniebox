@@ -1,0 +1,7 @@
+[v3_req]
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = prod.de.tbs.toys
+DNS.2 = rtnl.bxcl.de
+DNS.3 =	prod.revvox 
+DNS.4 = rtnl.revvox

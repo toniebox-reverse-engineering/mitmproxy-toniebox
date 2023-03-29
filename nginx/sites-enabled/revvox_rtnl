@@ -2,6 +2,8 @@ server {
 		#listen 443 http2;
 		listen 443;
     server_name rtnl.revvox;
+    ssl_certificate     /etc/ssl/mitmproxy-ca-signed.pem;
+    ssl_certificate_key /etc/ssl/mitmproxy-ca-signed.key;
 		access_log logs/access/rntl_revvox.log;
     error_log logs/error/rtnl_revvox.log;
 

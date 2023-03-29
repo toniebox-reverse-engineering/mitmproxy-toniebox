@@ -1,8 +1,8 @@
 server {
     listen 443 ssl;
     server_name prod.de.tbs.toys;
-    ssl_certificate     /etc/ssl/certchain.pem;
-    ssl_certificate_key /etc/ssl/mitmproxy-ca.key;
+    ssl_certificate     /etc/ssl/mitmproxy-ca-signed.pem;
+    ssl_certificate_key /etc/ssl/mitmproxy-ca-signed.key;
 		access_log logs/access/prod_de_tbs_toys.log;
     error_log logs/error/prod_de_tbs_toys.log;
 
