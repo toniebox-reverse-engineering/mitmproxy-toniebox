@@ -59,7 +59,7 @@ export NGINX_CERT_FOLDER="/etc/ssl"
 #https://gist.github.com/vgmoose/125271f1d9e4a1269454a64095b9e4a1
 if [ ! -f "$NGINX_CERT_FOLDER/mitmproxy-ca-signed.pem" ]; then
   cd /certs
-  bash signcert.sh
+  faketime '2015-11-04 00:00:00' bash signcert.sh
   cd -
 fi
 echo "Starting nginx"

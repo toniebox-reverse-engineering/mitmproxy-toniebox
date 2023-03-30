@@ -53,9 +53,9 @@ services:
       - 8081:8081
         #      - 543:543
     volumes:
-      - ./certs/ca:/root/.mitmproxy
+      - ./mitmproxy-cert:/root/.mitmproxy
       - ./content:/root/CONTENT
-      - ./client-certs:/root/client-certs
+      - ./client-cert:/root/client-certs
       - ./config:/root/config
       - ./ssh:/etc/ssh
     restart: unless-stopped
