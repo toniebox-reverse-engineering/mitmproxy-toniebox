@@ -1,6 +1,6 @@
 server {
 		#listen 443 http2;
-		listen 443;
+		listen 443 ssl;
     server_name rtnl.revvox;
     ssl_certificate     /etc/ssl/mitmproxy-ca-signed.pem;
     ssl_certificate_key /etc/ssl/mitmproxy-ca-signed.key;
