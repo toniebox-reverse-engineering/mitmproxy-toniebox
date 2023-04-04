@@ -1,11 +1,35 @@
+load_module /usr/lib/nginx/modules/ngx_stream_module.so;
 events {
   worker_connections  1024;
 }
 
 stream {
-  server {
-    listen     443;
-    proxy_pass $RTNL_UPSTREAM:444;
-    #proxy_protocol on; #not supported by mitmproxy :(
-  }
+	    log_format basic '$ssl_preread_protocol ------$ssl_server_name ----- $ssl_preread_alpn_protocols ---- $ssl_preread_server_name --- $remote_addr [$time_local] '
+                     '$protocol $status $bytes_sent $bytes_received '
+                     '$session_time';
+
+		access_log      logs/stream.log  basic;
+		error_log      logs/errorstream.log debug;
+    map $ssl_preread_server_name $name {
+        prod.revvox prod_backend;
+        prod.de.tbs.toys prod_backend;
+        rtnl.revvox rtnl_backend;
+        rtnl.bxcl.de, rtnl_backend;
+    }
+
+    upstream prod_backend {
+        server 127.0.0.1:543;
+    }
+
+    upstream rtnl_backend {
+        server 127.0.0.1:643;
+    }
+
+    server{
+        listen 443;
+        proxy_pass $name;
+        ssl_preread on;
+				ssl_certificate     /etc/ssl/mitmproxy-ca-signed.pem;
+    		ssl_certificate_key /etc/ssl/mitmproxy-ca-signed.key;
+    }
 }

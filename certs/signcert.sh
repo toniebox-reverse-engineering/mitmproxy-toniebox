@@ -24,5 +24,7 @@ then
 	exit 1
 fi
 cp $CERTCHAIN $NGINX_CERT_FOLDER/mitmproxy-ca-signed.pem
-cp $MY_KEY $NGINX_CERT_FOLDER/mitmproxy-ca-signed.key
+cp $MY_KEY $NGINX_CERT_FOLDER/mitmproxy-ca-signed.pem.key
+#TODO: The box doesn't work with the ca.der generated from mitmproxy-ca.pem with this setup, use one generated with the signed cert:
+#openssl x509 -in certchain.pem -out ca.der -outform DER 
 

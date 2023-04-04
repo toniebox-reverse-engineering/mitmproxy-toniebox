@@ -1,0 +1,39 @@
+# Haproxy configuration for SSL request passthrough to different backend based on SNI read from Handshaking stage
+# The Loadbalance will not decode the encrpted data but transparently transfer to the backend server in Private subnet.
+# With such configuration, you can install multiply services with its own SSL certificate in backend in different EC2 instance, but only explosure to public internet with one Loadbalance IP. There is no need to install SSL certificate in Loadbalancer level.
+
+# Ref:
+#	How to support wildcard sni: https://stackoverflow.com/questions/24839318/haproxy-reverse-proxy-sni-wildcard
+#	https://www.haproxy.com/blog/enhanced-ssl-load-balancing-with-server-name-indication-sni-tls-extension/
+#	https://stuff-things.net/2016/11/30/haproxy-sni/
+
+
+#---------------------------------------------------------------------
+# Proxys to the webserver backend port 443
+#---------------------------------------------------------------------
+frontend main_ssl
+	bind :443
+	mode tcp
+	option tcplog
+	log global # disable if logging not needed
+
+	# Wait for a client hello for at most 5 seconds
+	tcp-request inspect-delay 5s
+	tcp-request content accept if { req_ssl_hello_type 1 }
+
+	use_backend prod if { req_ssl_sni -m end prod.revvox }
+	use_backend prod if { req_ssl_sni -m end prod.de.tbs.toys }
+	use_backend rtnl if { req_ssl_sni -m end rtnl.revvox }
+	use_backend rtnl if { req_ssl_sni -m end rtnl.bxcl.de }
+
+	default_backend static
+
+backend prod
+	mode tcp
+	balance roundrobin
+	server 127.0.0.1:543 check
+
+backend rtnl
+	mode tcp
+	balance roundrobin
+	server 127.0.0.1:643 check

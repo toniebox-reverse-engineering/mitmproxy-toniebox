@@ -61,7 +61,9 @@ export NGINX_CERT_FOLDER="/etc/ssl"
 cd /certs
 faketime '2015-11-04 00:00:00' bash signcert.sh
 cd -
-echo "Starting nginx"
-nginx
+#echo "Starting nginx"
+#nginx
+echo "Starting haproxy"
+haproxy -f haproxy/haproxy.cfg > haproxy.log 2>&1 &
 
 exec mitmweb "-s /root/addons/TonieboxAddonStart.py"

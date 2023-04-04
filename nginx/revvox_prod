@@ -1,16 +1,16 @@
 server {
-		#listen 443 http2;
-		listen 443 ssl;
-    server_name rtnl.revvox;
+    listen 443 ssl http2;
+    server_name prod.revvox;
     ssl_certificate     /etc/ssl/mitmproxy-ca-signed.pem;
     ssl_certificate_key /etc/ssl/mitmproxy-ca-signed.key;
-		access_log logs/access/rntl_revvox.log;
-    error_log logs/error/rtnl_revvox.log;
+		access_log logs/access/prod_revvox.log;
+    error_log logs/error/prod_revvox.log debug;
 
     location / {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-				grpc_pass grpcs://localhost:643;
+				proxy_pass http://localhost:543;
+				#proxy_pass https://localhost:543;
     }
 }
