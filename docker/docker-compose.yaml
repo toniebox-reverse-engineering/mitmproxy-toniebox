@@ -36,7 +36,6 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
-      #- 127.0.0.1
     environment:
       #- SSLKEYLOGFILE=/root/sslkeylogfile.txt
       - MITMPROXY_MODE=reverse 
@@ -47,11 +46,8 @@ services:
       #- TONIEBOX_FALLBACK_CERT=toniebox-v3.pem
     tty: true
     ports:
-      #      - 8022:8022
       - 443:443
-        #- 444:444
       - 8081:8081
-        #      - 543:543
     volumes:
       - ./mitmproxy-cert:/root/.mitmproxy
       - ./content:/root/CONTENT
@@ -59,27 +55,3 @@ services:
       - ./config:/root/config
       - ./ssh:/etc/ssh
     restart: unless-stopped
-      # hackiebox-reverse-nginx:
-      #   container_name: hackiebox-reverse-nginx
-      #   hostname: hackiebox-reverse-nginx
-      #   image: hbs-nginx:latest
-      #   networks:
-      #     lan: 
-      #       ipv4_address: <IP-R-LAN>
-      #   environment:
-      #     - RTNL_UPSTREAM=hackiebox-reverse #CANNOT BE CHANGED, DOESN'T WORK!!!
-      #   ports:
-      #     - 443:443
-      #   restart: unless-stopped
-      #volumes:
-      #  certs:
-      #  content:
-      #  config:
-      #  client-certs:
-      #  ssh:
-      #  addons:
-    #networks:
-    #  lan:
-    #    external: true
-    #  mitm:
-    #    external: true

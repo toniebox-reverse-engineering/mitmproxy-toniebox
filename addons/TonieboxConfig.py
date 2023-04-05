@@ -10,8 +10,7 @@ from mitmproxy import ctx, version
 class TonieboxConfig:
     def __init__(self):
         logging.warn(f"Start: TonieboxConfig")
-        #self.boxes=[("192.168.1.2","00:00:00:00:00:00")]
-        self.boxes=[("192.168.178.151","0c:ae:7d:df:9e:0b")] #TODO: Comment out
+        self.boxes=[("192.168.1.2","00:00:00:00:00:00")]
         self.module_dir = Path(__file__).parent
         sys.path.append(self.module_dir)
         logging.warn(f"module_path={self.module_dir}")
@@ -38,22 +37,13 @@ class TonieboxConfig:
         self.url_real_rtnl = "rtnl.bxcl.de"
         self.url_fake_prod = env_url_prod
         self.url_fake_rtnl = env_url_rtnl
-        self.fake_port_prod = 543 #from nginx' sites-enabled
+        self.fake_port_prod = 543 #from haproxy.cfg
         self.fake_port_rtnl = 643
 
         if env_mode == "reverse":
-            #ctx.options.mode = [f"reverse:https://{self.url_real_prod}:443@:443", f"reverse:tls://{self.url_real_rtnl}:443@:444"]
             ctx.options.mode = [
-                                f"reverse:https://{self.url_real_prod}:443@:543",
-                                f"reverse:tls://{self.url_real_rtnl}:443@:643",
-                                #f"reverse:https://{self.url_real_rtnl}:443@:643",
-                                #https://stackoverflow.com/questions/48171389/ssl-preread-is-not-working-in-nginx
-                                #https://stackoverflow.com/questions/55651402/nginx-stream-ssl-preread-module-unable-to-read-ssl-preread-server-name
-                                #f"reverse:tls://{self.url_real_rtnl}:443@:643",
-                                #f"reverse:tls://{self.url_real_rtnl}:443@:743",
-                                #f"reverse:https://{self.url_real_prod}:443@:{self.fake_port_prod}"
-                                #f"reverse:https://{self.url_real_prod}:443@:{self.fake_port_prod}"
-                                #f"reverse:tls://{self.url_real_rtnl}:443@:{self.fake_port_rtnl}"
+                                f"reverse:https://{self.url_real_prod}:443@:{self.fake_port_prod}",
+                                f"reverse:tls://{self.url_real_rtnl}:443@:{self.fake_port_rtnl}"
             ]
             self.mode = env_mode
             #ctx.options.allow_hosts = [f"{self.url_fake_prod}"]

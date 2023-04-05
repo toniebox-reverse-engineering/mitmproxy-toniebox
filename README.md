@@ -3,7 +3,6 @@ You may create a vm / lxc with docker.
 
 ## Image preperation
 Just "docker build . --tag hbs:latest" your image. Don't forget to enter your ips!
-Also build the nginx image if needed: "docker build ./docker/nginx/ --tag hbs-nginx:latest"
 
 ## Variants
 Select the variant you want to use. You may remove the variant from the docker-compose.yaml you don't need.
@@ -12,7 +11,9 @@ Select the variant you want to use. You may remove the variant from the docker-c
 You'll need one network. Please reconfigure your DNS so prod.de.tbs.toys points to the ip of your reverse container. Please set rtnl.bxcl.de to the ip of the nginx container.  
 
 With this variant you can inspect the RTNL log messages.
+## Config:
 
+Mitmproxy needs to connect to boxine's server to get data from boxine's servers. To that end it needs to use the same cert that was originally on the toniebox, which can be identified by the mac address of the box. We can use an arprequest to get the mac address of an IP, but since we are using docker, which masks the connecting IP, you need to either set start the container with `--net=host` or you can map the IP of the box to its mac by hard-coding ip and mac in `addons/TonieboxConfig.py`
 ## Certificates
 ### mitmproxy-ca-cert.pem conversion
 mitmproxy-ca-cert.pem in `certs`/ca/ volume is converted to ca.der automatically. Flash it to your toniebox flash:/cert/ca.der (or flash it as flash:/cert/c2.der if using the altCA patch). 

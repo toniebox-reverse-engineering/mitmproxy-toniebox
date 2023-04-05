@@ -2187,7 +2187,8 @@ get	addons/google/protobuf/internal/containers.py	/^  def get(self, key: _K) -> 
 get	addons/google/protobuf/internal/containers.py	/^  def get(self, key: _K, default: _T) -> Union[_V, _T]:$/;"	m	class:MessageMap
 get	addons/google/protobuf/internal/containers.py	/^  def get(self, key: _K, default: _T) -> Union[_V, _T]:$/;"	m	class:ScalarMap
 get	addons/google/protobuf/pyext/scoped_pyobject_ptr.h	/^  PyObjectStruct* get() const { return ptr_; }$/;"	f	class:google::protobuf::python::ScopedPythonPtr
-getMacByIp	addons/TonieboxClientCertSelect.py	/^    def getMacByIp(self, ip_address) -> bytes:$/;"	m	class:TonieboxClientCertSelect
+getIpByPeername	addons/TonieboxClientCertSelect.py	/^    def getIpByPeername(self, peername):$/;"	m	class:TonieboxClientCertSelect
+getMacByIp	addons/TonieboxClientCertSelect.py	/^    def getMacByIp(self, box_ip) -> bytes:$/;"	m	class:TonieboxClientCertSelect
 get_by_camelcase_name_fn	addons/google/protobuf/pyext/descriptor_containers.cc	/^  GetByCamelcaseNameMethod get_by_camelcase_name_fn;$/;"	m	struct:google::protobuf::python::DescriptorContainerDef	file:
 get_by_index_fn	addons/google/protobuf/pyext/descriptor_containers.cc	/^  GetByIndexMethod get_by_index_fn;$/;"	m	struct:google::protobuf::python::DescriptorContainerDef	file:
 get_by_name_fn	addons/google/protobuf/pyext/descriptor_containers.cc	/^  GetByNameMethod get_by_name_fn;$/;"	m	struct:google::protobuf::python::DescriptorContainerDef	file:
@@ -2461,6 +2462,7 @@ repeated_composite_container	addons/google/protobuf/pyext/repeated_composite_con
 repeated_composite_container	addons/google/protobuf/pyext/repeated_composite_container.h	/^namespace repeated_composite_container {$/;"	n	namespace:google::protobuf::python
 repeated_scalar_container	addons/google/protobuf/pyext/repeated_scalar_container.cc	/^namespace repeated_scalar_container {$/;"	n	namespace:google::protobuf::python	file:
 repeated_scalar_container	addons/google/protobuf/pyext/repeated_scalar_container.h	/^namespace repeated_scalar_container {$/;"	n	namespace:google::protobuf::python
+request	addons/TonieboxClientCertSelect.py	/^    def request(self, flow: mitmproxy.http.HTTPFlow):$/;"	m	class:TonieboxClientCertSelect
 request	addons/TonieboxContentReplace.py	/^    def request(self, flow: http.HTTPFlow) -> None:$/;"	m	class:TonieboxContentReplace
 request_claim	addons/TonieboxContentReplace.py	/^    def request_claim(self, flow: http.HTTPFlow) -> None:$/;"	m	class:TonieboxContentReplace
 request_content	addons/TonieboxContentReplace.py	/^    def request_content(self, flow: http.HTTPFlow) -> None:$/;"	m	class:TonieboxContentReplace

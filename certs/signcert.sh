@@ -1,5 +1,3 @@
-pwd
-ls
 mkdir -p demoCA/newcerts
 touch demoCA/index.txt
 echo '01' > demoCA/serial
@@ -20,11 +18,9 @@ rm -rf demoCA
 openssl verify -verbose -CAfile $CA_CERT $CERTCHAIN
 if [ $? -ne 0 ]
 then
-  echo "Something went wrong while creating the cert for nginx."
+  echo "Something went wrong while creating the certs."
 	exit 1
 fi
-cp $CERTCHAIN $NGINX_CERT_FOLDER/mitmproxy-ca-signed.pem
-cp $MY_KEY $NGINX_CERT_FOLDER/mitmproxy-ca-signed.pem.key
-#TODO: The box doesn't work with the ca.der generated from mitmproxy-ca.pem with this setup, use one generated with the signed cert:
-#openssl x509 -in certchain.pem -out ca.der -outform DER 
+cp $CERTCHAIN $SS_CERT_FOLDER/mitmproxy-ca-signed.pem
+cp $MY_KEY $SS_CERT_FOLDER/mitmproxy-ca-signed.pem.key
 

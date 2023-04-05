@@ -77,20 +77,10 @@ VOLUME [ \
     "/etc/ssh" \
     ]
 
-#ADD nginx/sites-enabled /etc/nginx/sites-enabled
 ADD certs/* /certs/
-#ADD nginx/nginx.conf.template /etc/nginx/nginx.conf
 ADD haproxy/haproxy.cfg haproxy/
-RUN bash -c 'mkdir -p /usr/share/nginx/logs/{access,error}'
-ENV export SSLKEYLOGFILE=$HOME/sslkeylog.log
-RUN echo 'alias nginxdomainlogs="cd /usr/share/nginx"' >> ~/.bashrc \
-    && echo 'alias nginxserverlogs="cd /var/log/nginx/"' >> ~/.bashrc \
-    && echo 'alias ll="ls -lart"' >> ~/.bashrc \
+RUN echo 'alias ll="ls -lart"' >> ~/.bashrc \
     && echo 'alias hal="tail -f /haproxy.log"' >> ~/.bashrc 
-
-#allow nginx log redirection
-#RUN unlink /var/log/nginx/access.log
-#RUN unlink /var/log/nginx/error.log
 
 COPY docker/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +rx /usr/local/bin/docker-entrypoint.sh

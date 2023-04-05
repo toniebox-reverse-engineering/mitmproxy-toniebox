@@ -32,9 +32,13 @@ class TonieboxClientCertSelect:
                     return mac
 
     def getIpByPeername(self, peername):
-        for box_ip, box_peername in self.boxes.items():
+        box_ip = None
+        for ip, box_peername in self.boxes.items():
             if peername[0] == box_peername[0] and peername[1] == box_peername[1]:
-                return box_ip
+                box_ip = ip
+        if not box_ip:
+            box_ip = next(iter(self.boxes))
+        return ip
 
             
 
