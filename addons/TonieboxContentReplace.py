@@ -74,6 +74,10 @@ class TonieboxContentReplace:
                 logging.warn(f"invalid authorization header, creating nocloud file")
                 Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
                 open(content_nocloud_path, 'a').close()
+            elif not self.is_slix_l_content_id(content_id):
+                logging.warn(f"content_id {content_id} is not a SLIX-L tag, creating nocloud file")
+                Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
+                open(content_nocloud_path, 'a').close()
             else:
                 return
         
@@ -149,6 +153,12 @@ class TonieboxContentReplace:
         if headers["Authorization"] == "BD 0000000000000000000000000000000000000000000000000000000000000000":
             return False
         return True
+    
+    def is_slix_l_content_id(self, content_id) -> bool:
+        if content_id[6:] == "E00403":
+            return True
+        else:
+            return False
     
     def request_freshness_check(self, flow: http.HTTPFlow) -> None:   
         flow.backup() #mark as modified            
