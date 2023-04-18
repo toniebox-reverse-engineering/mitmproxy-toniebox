@@ -14,9 +14,11 @@ RUN git clone --depth 1 --branch $MITMPROXY_BRANCH https://github.com/mitmproxy/
 #Downgrade OpenSSL so it supports SHA-1 for v1/v2 boxes
 RUN sed -ri 's/"cryptography([>=]{1,2}[0-9\.,]+[<=]{1,2}[0-9\.]+)"/#Install manually/' /opt/mitmproxy/setup.py
 
-RUN if [ `dpkg --print-architecture` = "armhf" ]; then \
-    printf "[global]\nextra-index-url=https://www.piwheels.org/simple\n" > /etc/pip.conf ; \
-    --mount=type=tmpfs,target=/root/.cargo python -m venv /opt/venv/mitmproxy \
+#RUN if [ `dpkg --print-architecture` = "armhf" ]; then \
+#    printf "[global]\nextra-index-url=https://www.piwheels.org/simple\n" > /etc/pip.conf ; \
+RUN --mount=type=tmpfs,target=/root/.cargo if [ `dpkg --print-architecture` = "armhf" ]; then \ 
+    python -m venv /opt/venv/mitmproxy \
+    && printf "[global]\nextra-index-url=https://www.piwheels.org/simple\n" > /etc/pip.conf \
     && /opt/venv/mitmproxy/bin/pip install arpreq scapy dnspython \
     && mkdir -p ~/.cargo && chmod 777 ~/.cargo && /opt/venv/mitmproxy/bin/pip install cryptography==38.0.4 cryptography \
     && /opt/venv/mitmproxy/bin/pip install -e "/opt/mitmproxy/.[dev]"; \
