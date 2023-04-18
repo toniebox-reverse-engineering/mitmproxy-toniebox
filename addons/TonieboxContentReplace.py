@@ -229,6 +229,10 @@ class TonieboxContentReplace:
                 logging.warn(f"invalid authorization header, creating nocloud file")
                 Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
                 open(content_nocloud_path, 'a').close()
+            elif not self.is_slix_l_content_id(content_id):
+                logging.warn(f"content_id {content_id} is not a SLIX-L tag, creating nocloud file")
+                Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
+                open(content_nocloud_path, 'a').close()
             else:
                 return
         
