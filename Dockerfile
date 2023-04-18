@@ -19,7 +19,7 @@ RUN sed -ri 's/"cryptography([>=]{1,2}[0-9\.,]+[<=]{1,2}[0-9\.]+)"/#Install manu
 RUN --mount=type=tmpfs,target=/root/.cargo if [ `dpkg --print-architecture` = "armhf" ]; then \ 
     python -m venv /opt/venv/mitmproxy \
     && printf "[global]\nextra-index-url=https://www.piwheels.org/simple\n" > /etc/pip.conf \
-    && /opt/venv/mitmproxy/bin/pip install arpreq scapy dnspython \
+    && /opt/venv/mitmproxy/bin/pip install arpreq scapy dnspython protobuf==3.20.3 \
     && mkdir -p ~/.cargo && chmod 777 ~/.cargo && /opt/venv/mitmproxy/bin/pip install cryptography==38.0.4 cryptography \
     && /opt/venv/mitmproxy/bin/pip install -e "/opt/mitmproxy/.[dev]"; \
     else \
