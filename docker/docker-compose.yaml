@@ -42,6 +42,9 @@ services:
       - TONIEBOX_URL_PROD=prod.revvox #custom local dns name for prod server (reverse proxy)
       - TONIEBOX_URL_RTNL=rtnl.revvox #custom local dns name for rtnl server (reverse proxy)
       - ROOT_PASS=root #For SSH access (and tcpdump)
+      #- TONIEBOX1_IP_MAC = 192.168.1.2/00:00:00:00:00:00 # link mac to ip if you are NOT running in host mode
+      #- TONIEBOX2_IP_MAC = 192.168.1.2/00:00:00:00:00:00
+      #- TONIEBOX3_IP_MAC = 192.168.1.2/00:00:00:00:00:00
       #- TONIEBOX_FIXED_CERT=toniebox-v3.pem
       #- TONIEBOX_FALLBACK_CERT=toniebox-v3.pem
     tty: true

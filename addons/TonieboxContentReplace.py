@@ -67,6 +67,7 @@ class TonieboxContentReplace:
         content_dir = content_id[:8].upper()
         content_file = content_id[8:].upper()
         content_path = Path(config.content_dir, content_dir, content_file)
+        logging.info(f"Looking for content in {content_path}")
         content_nocloud_path = Path(config.content_dir, content_dir, content_file + ".nocloud")
         
         if not content_nocloud_path.is_file():

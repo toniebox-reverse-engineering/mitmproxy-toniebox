@@ -10,7 +10,7 @@ from mitmproxy import ctx, version
 class TonieboxConfig:
     def __init__(self):
         logging.warn(f"Start: TonieboxConfig")
-        self.boxes=[("192.168.1.2","00:00:00:00:00:00")]
+        self.boxes=[]
         self.module_dir = Path(__file__).parent
         sys.path.append(self.module_dir)
         logging.warn(f"module_path={self.module_dir}")
@@ -25,6 +25,17 @@ class TonieboxConfig:
         env_cert_dir = os.environ.get("TONIEBOX_CLIENT_CERT_DIR")
         env_fixed_cert = os.environ.get("TONIEBOX_FIXED_CERT")
         env_fallback_cert = os.environ.get("TONIEBOX_FALLBACK_CERT")
+
+        toniebox1_ip_mac = os.environ.get("TONIEBOX1_IP_MAC")
+        toniebox2_ip_mac = os.environ.get("TONIEBOX2_IP_MAC")
+        toniebox3_ip_mac = os.environ.get("TONIEBOX3_IP_MAC")
+
+        #get ips and macs via environment variables
+        for box in [toniebox1_ip_mac, toniebox2_ip_mac, toniebox3_ip_mac]:
+            if box:
+                ip = box.split("/")[0] 
+                mac = box.split("/")[1] 
+                self.boxes.append((ip,mac))
 
         if env_conf_dir is None:
             self.config_dir = Path(self.module_dir, "config")
