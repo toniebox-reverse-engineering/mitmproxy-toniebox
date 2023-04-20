@@ -19,7 +19,6 @@ from TonieboxConfig import config
 class TonieboxClientCertSelect:
     def __init__(self):
         logging.warn(f"Start: TonieboxClientCertSelect")
-        self.boxes = {}
         
     def getMacByIp(self, box_ip) -> bytes:
         #print(getmacbyip(str(ip_address)))
@@ -31,15 +30,6 @@ class TonieboxClientCertSelect:
                 if ip == box_ip:
                     return mac
 
-#    def getIpByPeername(self, peername):
-#        box_ip = None
-#        for ip, box_peername in self.boxes.items():
-#            if peername[0] == box_peername[0] and peername[1] == box_peername[1]:
-#                box_ip = ip
-#        #no peers found, fall back to first box defined in config
-#        if not box_ip:
-#            box_ip = next(iter(self.boxes))
-#        return box_ip
     def getIp(self, headers):
         print(headers)
         if not headers or 'X-Real-IP' not in headers:
@@ -50,16 +40,10 @@ class TonieboxClientCertSelect:
             ip = headers['X-Real-IP'] 
         return ip
 
-            
-
-
-
-
     def request(self, flow: mitmproxy.http.HTTPFlow):
         print(f"{flow=}")
         print(f"{flow.request.headers=}")
         box_ip = flow.request.headers['X-Real-IP']
-        print(f"{self.boxes=}")
     #def client_connected(self, client: connection.Client):
     def server_connect(self, data: proxy.server_hooks.ServerConnectionHookData):
         if config.fixed_cert is None:
