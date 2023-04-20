@@ -31,13 +31,23 @@ class TonieboxClientCertSelect:
                 if ip == box_ip:
                     return mac
 
-    def getIpByPeername(self, peername):
-        box_ip = None
-        for ip, box_peername in self.boxes.items():
-            if peername[0] == box_peername[0] and peername[1] == box_peername[1]:
-                box_ip = ip
-        if not box_ip:
-            box_ip = next(iter(self.boxes))
+#    def getIpByPeername(self, peername):
+#        box_ip = None
+#        for ip, box_peername in self.boxes.items():
+#            if peername[0] == box_peername[0] and peername[1] == box_peername[1]:
+#                box_ip = ip
+#        #no peers found, fall back to first box defined in config
+#        if not box_ip:
+#            box_ip = next(iter(self.boxes))
+#        return box_ip
+    def getIp(self, headers):
+        print(headers)
+        if not headers or 'X-Real-IP' not in headers:
+            #assuming this is rtnl, returning first configured ip
+            print(config.boxes)
+            ip = config.boxes[0][0]
+        else: 
+            ip = headers['X-Real-IP'] 
         return ip
 
             
@@ -49,14 +59,13 @@ class TonieboxClientCertSelect:
         print(f"{flow=}")
         print(f"{flow.request.headers=}")
         box_ip = flow.request.headers['X-Real-IP']
-        self.boxes[box_ip] = flow.client_conn.peername
         print(f"{self.boxes=}")
     #def client_connected(self, client: connection.Client):
     def server_connect(self, data: proxy.server_hooks.ServerConnectionHookData):
         if config.fixed_cert is None:
             print(f"{data=}")
             print(f"{http.Headers()=}")
-            box_ip = self.getIpByPeername(data.client.peername)
+            box_ip = self.getIp(http.Headers())
             mac = binascii.unhexlify(self.getMacByIp(box_ip).replace(':', ''))
 
             found = False
