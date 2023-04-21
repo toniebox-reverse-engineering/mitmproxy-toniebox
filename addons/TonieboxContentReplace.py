@@ -58,6 +58,7 @@ class TonieboxContentReplace:
             api_version = "v2"
             
         content_id = flow.request.path[12:]
+        print(f"{content_id}")
         
         logging.warn(f"Api={api_version}, content_id={content_id}")
         if (len(content_id) != 16):
@@ -71,12 +72,13 @@ class TonieboxContentReplace:
         content_nocloud_path = Path(config.content_dir, content_dir, content_file + ".nocloud")
         
         if not content_nocloud_path.is_file():
+            print(f"{content_id}")
             if not self.is_valid_tonie_auth_header(flow.request.headers):
                 logging.warn(f"invalid authorization header, creating nocloud file")
                 Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
                 open(content_nocloud_path, 'a').close()
             elif not self.is_slix_l_content_id(content_id):
-                logging.warn(f"content_id {content_id} is not a SLIX-L tag, creating nocloud file")
+                logging.warn(f"content_id {content_id} is not a sLIX-L tag, creating nocloud file")
                 Path(content_nocloud_path).parent.mkdir(parents=True, exist_ok=True)
                 open(content_nocloud_path, 'a').close()
             else:
@@ -156,7 +158,9 @@ class TonieboxContentReplace:
         return True
     
     def is_slix_l_content_id(self, content_id) -> bool:
-        if content_id[6:] == "E00403":
+        print(f"{content_id=}")
+        print(f"{content_id[10:]=}")
+        if content_id[10:].upper() == "0304E0": #reverse E00403
             return True
         else:
             return False
