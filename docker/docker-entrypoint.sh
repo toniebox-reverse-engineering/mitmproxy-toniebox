@@ -50,10 +50,6 @@ if [ ! -f "$MITMPROXY_CERT_PATH/ca.der" ]; then
   openssl x509 -inform PEM -outform DER -in $MITMPROXY_CERT_PATH/mitmproxy-ca-cert.cer -out $MITMPROXY_CERT_PATH/ca.der
 fi
 
-if [ -v SSLKEYLOGFILE ]; then
-  echo "SSLKEYLOGFILE=$SSLKEYLOGFILE"
-  exec env SSLKEYLOGFILE=$SSLKEYLOGFILE mitmweb "-s /root/addons/TonieboxAddonStart.py"
-fi
 
 #create self signed certs
 export SS_CERT_FOLDER="/etc/ssl"
@@ -64,4 +60,9 @@ cd -
 echo "Starting haproxy"
 haproxy -f haproxy/haproxy.cfg > haproxy.log 2>&1 &
 
-exec mitmweb "-s /root/addons/TonieboxAddonStart.py"
+if [ -v SSLKEYLOGFILE ]; then
+  echo "SSLKEYLOGFILE=$SSLKEYLOGFILE"
+  exec env SSLKEYLOGFILE=$SSLKEYLOGFILE mitmweb "-s /root/addons/TonieboxAddonStart.py"
+else
+  exec mitmweb "-s /root/addons/TonieboxAddonStart.py"
+fi
