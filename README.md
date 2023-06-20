@@ -37,7 +37,7 @@ Original CA as PEM into config volume named toniebox.ca.pem. (generated from  th
 openssl x509 -inform DER -outform PEM -in ca.der -out toniebox.ca.pem
 ```
 
-[Additional information about the certificates and CA.](https://github.com/toniebox-reverse-engineering/toniebox/wiki/Traffic-Sniffing)
+[Additional information about the certificates and CA.](https://github.com/toniebox-reverse-engineering/toniebox/wiki/Traffic-Sniffing#certificates-helpers-just-for-legacy-reasons)
 
 ## Startup
 Start the app via "docker-compose -f docker-compose.yaml up"
@@ -49,4 +49,4 @@ You may ssh into the container via ssh root@<ip> -p 8022
 You may use the altCa/altUrl patches in slot add2/add3 to allow the certificate to be loaded from flash:/cert/c2.der and set the URL to prod.revvox / rtnl.revvox.
 
 ## More Docs about mitm
-See: https://github.com/toniebox-reverse-engineering/toniebox/blob/cf3528cab6610b7b008a6ebb76b8a413fe9a4e38/wiki/Traffic-Sniffing.md
+See: [Toniebox Wiki - Traffic Sniffing](https://github.com/toniebox-reverse-engineering/toniebox/wiki/Traffic-Sniffing)
