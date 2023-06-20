@@ -37,7 +37,7 @@ Original CA as PEM into config volume named toniebox.ca.pem. (generated from  th
 openssl x509 -inform DER -outform PEM -in ca.der -out toniebox.ca.pem
 ```
 
-[Additional information about the certificates and CA.](https://github.com/toniebox-reverse-engineering/toniebox/wiki/Traffic-Sniffing/e5ce1f10e3dc63376ca03df153bd0c8e485e0ad8)
+[Additional information about the certificates and CA.](https://github.com/toniebox-reverse-engineering/toniebox/wiki/Traffic-Sniffing)
 
 ## Startup
 Start the app via "docker-compose -f docker-compose.yaml up"
